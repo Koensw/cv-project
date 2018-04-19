@@ -11,7 +11,7 @@ from caffe import layers as L
 caffe.set_mode_cpu()
 
 # set base path
-basePath = "kitti"
+basePath = "ucf"
 
 solverPath = basePath + '/tuple_solver.prototxt'
 solver = caffe.SGDSolver(solverPath)

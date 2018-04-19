@@ -178,7 +178,7 @@ class WatchTrainer():
             norms=currnorms;
             wtdiffnorms=currwtdiffnorm;
         if self.verbose:
-            print('%d writing to weight_norms ... '%(self.solver.iter), end=' ')
+            print('%d writing to weight_norms ... '%(self.solver.iter))
         try:
             fh = h5py.File(outFile,'w'); #overwrite!!
             fh.create_dataset('means',data=means,dtype=np.float32)
