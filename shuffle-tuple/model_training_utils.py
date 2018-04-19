@@ -7,6 +7,7 @@ import datetime
 import sg_utils
 from caffe.proto import caffe_pb2
 import google.protobuf as pb2
+import google.protobuf.text_format as pb2tf
 import traceback as tb
 import code
 try:
@@ -44,7 +45,7 @@ class WatchTrainer():
         self.expDir = os.path.split(solverPath)[0];
         self.solver_param = caffe_pb2.SolverParameter();
         with open(self.solverPath, 'rt') as f:
-            pb2.text_format.Merge(f.read(), self.solver_param)
+            pb2tf.Merge(f.read(), self.solver_param)
 
         allLines = [x.strip() for x in open(solverPath,'r')];
 
