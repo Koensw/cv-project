@@ -10,7 +10,7 @@ layer {
        module: "python_layers.multiple_image_multiple_label_data_layer"
        layer: "MultipleImageMultipleLabelDataLayer"
 #batch_size
-       param_str: "{ 'keys_file': './kitti/train02_image_keys.txt', 'data_shapes' : [[32,3,1242,375],[32,3,1242,375],[32,3,1242,375],[32,1,1,1]], 'label_files' : [], 'txt_files': ['./kitti/train02_image_labels.txt'], 'image_dir' : '../../kitti', 'image_ext' : '.png', bgr_mean: [103.939, 116.779, 123.68], 'top_dtypes': ['im','im','im','txt'], 'prefetch_size': 10, 'shuffle': False }"
+       param_str: "{ 'keys_file': './kitti/train02_image_keys.txt', 'data_shapes' : [[8,3,1242,375],[8,3,1242,375],[8,3,1242,375],[8,1,1,1]], 'label_files' : [], 'txt_files': ['./kitti/train02_image_labels.txt'], 'image_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/extracted/', 'image_ext' : '.png', bgr_mean: [103.939, 116.779, 123.68], 'top_dtypes': ['im','im','im','txt'], 'prefetch_size': 0, 'shuffle': False }"
     }
     include { phase: TRAIN  }
 }
@@ -357,7 +357,7 @@ layer {
     name: "fc7_split" top: "fc7_split0" top: "fc7_split1" top: "fc7_split2"  bottom: "fc7"
     type: "Slice"
 #batch_size
-    slice_param { axis: 0 slice_point: 32 slice_point: 64  }
+    slice_param { axis: 0 slice_point: 8 slice_point: 16 }
 }
 
 layer {

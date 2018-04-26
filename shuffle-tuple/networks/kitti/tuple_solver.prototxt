@@ -11,4 +11,4 @@ weight_decay: 0.0005
 snapshot: 0
 solver_mode: CPU
 random_seed: 2
-iter_size: 4 #maintain batchsize of 128
+iter_size: 16 #maintain batchsize of 128

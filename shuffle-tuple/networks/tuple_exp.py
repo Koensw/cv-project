@@ -19,13 +19,18 @@ else:
 
 # set base path
 basePath = "ucf"
+import sys
+if len(sys.argv) > 1:
+	basePath = sys.argv[1]
+
+print("PATH: ", basePath)
 
 solverPath = basePath + '/tuple_solver.prototxt'
 solver = caffe.SGDSolver(solverPath)
 
 numIter = 100000;
 logStep = 20;
-snapshotIter = 20000;
+snapshotIter = 5000;
 trainer = WatchTrainer(solverPath, solver);
 trainer.init_logging();
 trainer.train_model(numIter, logStep, snapshotIter, track_indiv_loss=True);

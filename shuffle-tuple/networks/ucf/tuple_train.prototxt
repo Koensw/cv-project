@@ -391,6 +391,7 @@ layer {
   bottom: "fc8_tri"
   bottom: "label"
   top: "loss"
+  loss_weight: 1
   include { phase: TRAIN  }
 }
 layer {
