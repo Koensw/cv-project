@@ -7,3 +7,4 @@
 *.lot
 *.toc
 *.txt
+__pycache__
