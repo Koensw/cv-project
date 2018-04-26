@@ -35,7 +35,36 @@ print("Preparing solver")
 solver_path = sys.argv[1]
 solver = caffe.SGDSolver(solver_path)
 
+max_iters = 10000
+snapshot_iter = 100
+log_iter = 1
+
+assert (snapshot_iter % log_iter) == 0
+
+def snapshot(solver, snap_path):
+    net = solver.net
+
+    if not os.path.exists(snap_path):
+        os.makedirs(snap_path);
+
+    filename = 'snapshot_' + 'iter_{:d}'.format(solver.iter) + '.caffemodel';
+    filename = os.path.join(snap_path, filename);
+    net.save(str(filename))
+    return filename;
+
+print('Checking snapshot')
+filename = snapshot(solver, "snapshots")
+
 print("Start training")
+while solver.iter < max_iters:
+    if (solver.iter % snapshot_iter) == 0:
+        snapshot(solver, "snapshots")
+    
+    print("Stepping...")
+    solver.step(log_iter)
+
+print("Finished, saving final model")
+solver.net.save("final_model.caffemodel")
 
 #numIter = 100000;
 #logStep = 20;
