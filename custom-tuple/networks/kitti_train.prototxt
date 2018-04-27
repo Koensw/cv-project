@@ -15,25 +15,41 @@ layer {
     }
     include { phase: TRAIN  }
 }
+#layer {
+    #name: "im1"
+    #top: "im1"
+    #type: "DummyData"
+    #dummy_data_param { shape {dim: 16 dim: 3 dim: 227 dim: 227 }   }
+    #include { phase: TEST  }
+#}
+#layer {
+    #name: "im2"
+    #top: "im2"
+    #type: "DummyData"
+    #dummy_data_param { shape {dim: 16 dim: 3 dim: 227 dim: 227 }   }
+    #include { phase: TEST  }
+#}
+#layer {
+    #name: "im3"
+    #top: "im3"
+    #type: "DummyData"
+    #dummy_data_param { shape {dim: 16 dim: 3 dim: 227 dim: 227 }   }
+    #include { phase: TEST  }
+#}
 layer {
-    name: "im1"
+    name: "label-data"
     top: "im1"
-    type: "DummyData"
-    dummy_data_param { shape {dim: 16 dim: 3 dim: 227 dim: 227 }   }
-    include { phase: TEST  }
-}
-layer {
-    name: "im2"
     top: "im2"
-    type: "DummyData"
-    dummy_data_param { shape {dim: 16 dim: 3 dim: 227 dim: 227 }   }
-    include { phase: TEST  }
-}
-layer {
-    name: "im3"
     top: "im3"
-    type: "DummyData"
-    dummy_data_param { shape {dim: 16 dim: 3 dim: 227 dim: 227 }   }
+    top: "label"
+    type: "Python"
+    python_param {
+        module: "input_image_tuple"
+        layer: "InputImageTuple"
+        param_str: " { 'keys_file': './networks/kitti/example_keys.txt', 'label_file' : './networks/kitti/example_labels.txt', 'base_dir' : '../../kitti/', 'batch_size': 8 }"
+        # ../../kitti/
+        # /srv/glusterfs/patilv/Datasets/kitti/raw/extracted/
+    }
     include { phase: TEST  }
 }
 

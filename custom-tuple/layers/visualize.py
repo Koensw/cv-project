@@ -24,7 +24,7 @@ class Visualize(caffe.Layer):
         self._save = False
         if "save_path" in layer_params:
             self._save_path = layer_params['save_path']
-	    self._save = True
+        self._save = True
         
         assert len(self._types) == len(bottom)
         self._batch_size = bottom[0].shape[0]
@@ -72,13 +72,13 @@ class Visualize(caffe.Layer):
         
         # Plot
         plt.subplots_adjust(left=0, right=1, bottom=0, top=1, wspace=0, hspace=0)
-	if not self._save:
-	        mng = plt.get_current_fig_manager()
-	        mng.window.showMaximized()
-	        plt.show()
-	else:
-		plt.savefig(os.path.join(self._save_path, "vis_{}.png".format(self._cur_iter)), dpi=300)
-		plt.close()
+        if not self._save:
+            mng = plt.get_current_fig_manager()
+            mng.window.showMaximized()
+            plt.show()
+        else:
+            plt.savefig(os.path.join(self._save_path, "vis_{}.png".format(self._cur_iter)), dpi=300)
+            plt.close()
 
 
     def backward(self, top, propagate_down, bottom):
