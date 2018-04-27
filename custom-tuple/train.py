@@ -13,6 +13,8 @@ import caffe
 def addPath(path):
     if path not in sys.path:
         sys.path.insert(0, path)
+	#path = os.path.join(os.path.dirname(os.path.abspath(__file__)), path)
+	#sys.path.append(path)
         print(('added {}'.format(path)))
 
 addPath('.')

@@ -9,9 +9,9 @@ layer {
     top: "label"
     type: "Python"
     python_param {
-        module: "layers.input_image_tuple"
+        module: "input_image_tuple"
         layer: "InputImageTuple"
-        param_str: " { 'keys_file': './networks/kitti/example_keys.txt', 'label_file' : './networks/kitti/example_labels.txt', 'base_dir' : '../../kitti', 'batch_size': 9}"
+        param_str: " { 'keys_file': '../../input/kitti_image_keys.txt', 'label_file' : '../../input/kitti_image_labels.txt', 'base_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/extracted/', 'batch_size': 32 }"
     }
     include { phase: TRAIN  }
 }
@@ -563,8 +563,8 @@ layer {
     type: "Slice"
 #batch_size
     slice_param { axis: 0 
-                  slice_point: 9
-                  slice_point: 18 
+                  slice_point: 32
+                  slice_point: 64 
                  }
 }
 
@@ -607,12 +607,12 @@ layer {
   top: "loss"
   #include { phase: TRAIN  }
 }
-layer {
-  name: "prob"
-  top: "prob"
-  type: "Softmax"
-  bottom: "fc8_tri"
-}
+#layer {
+#  name: "prob"
+#  top: "prob"
+#  type: "Softmax"
+#  bottom: "fc8_tri"
+#}
 layer {
   name: "accuracy"
   type: "Accuracy"
@@ -623,20 +623,20 @@ layer {
 }
 
 ### VISUALIZATION ###
-layer {
-  name: "loss_tracker"
-  type: "Python"
-  python_param {
-    module: "layers.visualize"
-    layer: "Visualize"
-    param_str: "{ 'types': ['img', 'img', 'img', 'txt', 'txt'], plot_iter: 10 }"
-  }
-  bottom: "im1"
-  bottom: "im2"
-  bottom: "im3"
-  bottom: "label"
-  bottom: "prob"
-}
+#layer {
+#  name: "loss_tracker"
+#  type: "Python"
+#  python_param {
+#    module: "visualize"
+#    layer: "Visualize"
+#    param_str: "{ 'types': ['img', 'img', 'img', 'txt', 'txt'], plot_iter: 10 }"
+#  }
+#  bottom: "im1"
+#  bottom: "im2"
+#  bottom: "im3"
+#  bottom: "label"
+#  bottom: "prob"
+#}
 
 #layer {
   #name: "prob"
