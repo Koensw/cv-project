@@ -4,7 +4,10 @@ if len(sys.argv) != 2:
     print('ERROR: pass solver prototxt as argument')
     sys.exit(1)
 
-print("Loading caffe")
+print("Loading libraries")
+
+import matplotlib
+matplotlib.use("Agg")
 
 import os
 import caffe
