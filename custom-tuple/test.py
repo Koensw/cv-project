@@ -38,6 +38,9 @@ np.set_printoptions(precision=2)
 print('Loss:', net.blobs['loss'].data)
 print('Exp / Out:\n', expout)
 
+maxeo = (expout > 0.5)
+print('Accuracy', np.sum(maxeo[:,0] == maxeo[:,1]) / len(expout))
+
 print("Done")
 
         
