@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function, division
 import sys
 if len(sys.argv) != 3:
     print('ERROR: pass network prototxt and caffemodel as argument')
@@ -41,6 +41,4 @@ print('Exp / Out:\n', expout)
 maxeo = (expout > 0.5)
 print('Accuracy', np.sum(maxeo[:,0] == maxeo[:,1]) / len(expout))
 
-print("Done")
-
-        
+print("Done")        

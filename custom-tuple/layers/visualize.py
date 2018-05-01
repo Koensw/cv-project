@@ -68,7 +68,7 @@ class Visualize(caffe.Layer):
         for j in range(self._batch_size):
             data = strs[j]
             axarr[-1, j].text(0.5, 0.5, str(data), horizontalalignment='center',
-                              verticalalignment='center', transform=axarr[-1, j].transAxes)
+                              verticalalignment='center', transform=axarr[-1, j].transAxes, fontsize=2)
         
         # Plot
         plt.subplots_adjust(left=0, right=1, bottom=0, top=1, wspace=0, hspace=0)

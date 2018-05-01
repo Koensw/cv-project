@@ -5,7 +5,7 @@ import glob
 
 rounds = 10000
 
-diff = 10
+diff = 5
 
 #array = np.arange(min_nr, max_nr+1)
 order = np.arange(0, 3)
@@ -17,19 +17,27 @@ base_name = "/srv/glusterfs/patilv/Datasets/kitti/raw/extracted"
 #local_file_dir = "2011_09_26_drive_0005_sync/image_02/data/"
 local_file_dir = "image_02/data/"
 
-dirs = os.glob(os.path.join(base_name, "*_sync"))
+dirs = glob.glob(os.path.join(base_name, "*_sync"))
+dir_size = []
+
+for d in dirs:
+    local_dir = os.path.join(base_name, d, local_file_dir)
+    
+    dir_size.append(len(os.listdir(local_dir)))
 
 for r in range(rounds):
-    local_dir = os.path.join(base_name,  dirs[np.random.rand(len(dirs))], local_file_dir)
-    print(local_dir)
+    dir_idx = np.random.randint(len(dirs))
+    local_dir = os.path.join(base_name,  dirs[dir_idx], local_file_dir)
     
     min_nr = 0
-    max_nr = len(os.listdir(local_dir))
+    max_nr = dir_size[dir_idx]
     
-    min_nr -= diff
-    max_nr += diff
+    min_nr += diff
+    max_nr -= diff
     
-    out = np.arange(i - diff, i + diff + 1, diff)
+    idx = np.random.randint(min_nr, max_nr)
+
+    out = np.arange(idx - diff, idx + diff + 1, diff)
 
     outo = np.random.choice(order, 3, replace = False)
     outosor = np.sort(outo)

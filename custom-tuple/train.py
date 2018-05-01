@@ -11,6 +11,7 @@ matplotlib.use("Agg")
 
 import os
 import caffe
+import numpy as np
 
 ## ADD PATHS
 def addPath(path):
@@ -61,6 +62,8 @@ print('Checking snapshot')
 filename = snapshot(solver, "snapshots")
 
 print("Start training")
+np.set_printoptions(precision=2)
+
 while solver.iter < max_iters:
     if (solver.iter % snapshot_iter) == 0:
         snapshot(solver, "snapshots")
