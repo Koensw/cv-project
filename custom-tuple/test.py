@@ -13,6 +13,8 @@ import numpy as np
 import os
 import caffe
 
+from visualize_net import * 
+
 ## ADD PATHS
 def addPath(path):
     if path not in sys.path:
@@ -32,6 +34,10 @@ print("Building net")
 net = caffe.Net(sys.argv[1], sys.argv[2], caffe.TEST)
 net.forward()
 
+visualize_weights(net, 'conv1', color = True, padding = 1)
+visualize_weights(net, 'conv5', padding = 1)
+visualize_activations(net, 'conv2', 'data')
+
 expout = np.vstack((net.blobs['label'].data, net.blobs['prob'].data[:,1])).transpose()
 
 np.set_printoptions(precision=2)
@@ -41,4 +47,4 @@ print('Exp / Out:\n', expout)
 maxeo = (expout > 0.5)
 print('Accuracy', np.sum(maxeo[:,0] == maxeo[:,1]) / len(expout))
 
-print("Done")        
+print("Done")

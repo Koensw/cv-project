@@ -4,7 +4,7 @@
 % Created 09/29/2006 by Andreas Ess
 % Extended 13/02/2009 by Jan Lesniak - jlesniak@vision.ee.ethz.ch
 %% ----------------------------------------------------------------------------
-\documentclass[pdftex,11pt,openright,headsepline]{book}
+\documentclass[pdftex,11pt,headsepline]{report} %openright {book}
 
 \usepackage{paralist}		% List environment
 \usepackage{color}		% For colored text
@@ -20,6 +20,7 @@
 % \usepackage{algorithm}
 \usepackage{fancyhdr}		% Produce the nice header
 \usepackage{fullpage} % Use the full page
+\usepackage{parskip}
 
 
 % Change the appearance of the header. Here \MakeUppercase is hard-coded, so renewing this command allows to elegantly change the header appearance.
@@ -60,7 +61,7 @@
 \fancypagestyle{plain}{
   \renewcommand{\headrulewidth}{0.0pt}
   \fancyfoot{}
-  \fancyfoot[RO, LE]{\thepage}
+  \fancyfoot[RO, L]{\thepage} % E
   \fancyhead{}
 }
 
