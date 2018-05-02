@@ -11,7 +11,7 @@ layer {
     python_param {
         module: "input_image_tuple"
         layer: "InputImageTuple"
-        param_str: " { 'keys_file': '../../input/kitti_image_keys_train.txt', 'label_file' : '../../input/kitti_image_labels_train.txt', 'base_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/extracted/', 'batch_size': 32 }"
+        param_str: " { 'keys_file': '../../input/kitti_image_keys_train.txt', 'label_file' : '../../input/kitti_image_labels_train.txt', 'base_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/extracted/', 'batch_size': 8 }"
     }
     include { phase: TRAIN  }
 }
@@ -46,7 +46,7 @@ layer {
     python_param {
         module: "input_image_tuple"
         layer: "InputImageTuple"
-        param_str: " { 'keys_file': '../../input/kitti_image_keys_test.txt', 'label_file' : '../../input/kitti_image_labels_train.txt', 'base_dir' : '../../kitti/', 'batch_size': 32 }"
+        param_str: " { 'keys_file': '../../input/kitti_image_keys_test.txt', 'label_file' : '../../input/kitti_image_labels_train.txt', 'base_dir' : '../../kitti/', 'batch_size': 8 }"
         # ../../kitti/
         # /srv/glusterfs/patilv/Datasets/kitti/raw/extracted/
     }
@@ -579,8 +579,8 @@ layer {
     type: "Slice"
 #batch_size
     slice_param { axis: 0 
-                  slice_point: 32
-                  slice_point: 64 
+                  slice_point: 8
+                  slice_point: 16 
                  }
 }
 
@@ -645,7 +645,7 @@ layer {
   python_param {
     module: "visualize"
     layer: "Visualize"
-    param_str: "{ 'types': ['img', 'img', 'img', 'txt', 'txt'], plot_iter: 10, save_path: 'snapshots' }"
+    param_str: "{ 'types': ['img', 'img', 'img', 'txt', 'txt'], plot_iter: 16, save_path: 'snapshots' }"
   }
   bottom: "im1"
   bottom: "im2"

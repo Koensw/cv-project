@@ -29,7 +29,7 @@ class InputImageTuple(caffe.Layer):
         assert len(top) > 1
         """Setup the layer"""
         self._tuple_len = 4
-        self._data_shape = (3, 227, 227)
+        self._data_shape = (1, 227, 227)
         
         layer_params = yaml.load(self.param_str)
         self._base_dir = layer_params['base_dir']
@@ -54,7 +54,9 @@ class InputImageTuple(caffe.Layer):
 
     def load_image(self, imname, shape):
         # Load image
-        im = np.array(Image.open(imname))
+        im = np.array(Image.open(imname).convert('L'))
+	im = im[:,:,None]
+	#print(im.shape)
         if im is None:
             print('could not read image: {}'.format(imname))
                                 
