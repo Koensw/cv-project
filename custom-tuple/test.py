@@ -34,7 +34,7 @@ print("Building net")
 net = caffe.Net(sys.argv[1], sys.argv[2], caffe.TEST)
 net.forward()
 
-visualize_weights(net, 'conv1', color = True, padding = 1)
+visualize_weights(net, 'conv1', color = False, padding = 1)
 visualize_weights(net, 'conv5', padding = 1)
 visualize_activations(net, 'conv2', 'data')
 

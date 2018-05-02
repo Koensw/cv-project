@@ -95,8 +95,9 @@ def visualize_activations(net, layer_name, image_layer_name, padding=4, box_size
         #print(idxs[1][0], idxs[2][0])
         for i in range(amount):
             image[n, 0, np.max([idxs[1][i]-box_size//2, 0]):idxs[1][i]+box_size//2, np.max([0, idxs[2][i]-box_size//2]):idxs[2][i]+box_size//2] = 1 - i/amount
-            for x in range(1, 2+1):
-                image[n, x, np.max([idxs[1][i]-box_size//2, 0]):idxs[1][i]+box_size//2, np.max([0, idxs[2][i]-box_size//2]):idxs[2][i]+box_size//2] = 0
+	    if image.shape[1] == 3:
+                for x in range(1, 2+1):
+                    image[n, x, np.max([idxs[1][i]-box_size//2, 0]):idxs[1][i]+box_size//2, np.max([0, idxs[2][i]-box_size//2]):idxs[2][i]+box_size//2] = 0
         
         if filter_x == filters_per_row:
             filter_y += 1

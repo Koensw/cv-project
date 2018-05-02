@@ -46,6 +46,9 @@ class Visualize(caffe.Layer):
         self._cur_iter += 1
         if (self._cur_iter % self._plot_iter) != 0: return
 
+	fsize = 2
+	if self._batch_size < 16: fsize = 4
+
         fig, axarr = plt.subplots(self._type_size + 1, self._batch_size, squeeze = False, sharex = True, sharey = True)
 
         # Fill
@@ -56,7 +59,10 @@ class Visualize(caffe.Layer):
             if tp == 'img':
                 for j in range(self._batch_size):
                     im = np.transpose(bottom[i].data[j], axes=(1, 2, 0))
-                    axarr[i, j].imshow(im)
+		    if im.shape[2] == 1:
+	                axarr[i, j].imshow(im[:,:,0], cmap="gray")
+		    else:
+                        axarr[i, j].imshow(im)	
                     axarr[i, j].get_xaxis().set_visible(False)
                     axarr[i, j].get_yaxis().set_visible(False)
             elif tp == 'txt':
@@ -68,7 +74,7 @@ class Visualize(caffe.Layer):
         for j in range(self._batch_size):
             data = strs[j]
             axarr[-1, j].text(0.5, 0.5, str(data), horizontalalignment='center',
-                              verticalalignment='center', transform=axarr[-1, j].transAxes, fontsize=2)
+                              verticalalignment='center', transform=axarr[-1, j].transAxes, fontsize=fsize)
         
         # Plot
         plt.subplots_adjust(left=0, right=1, bottom=0, top=1, wspace=0, hspace=0)
