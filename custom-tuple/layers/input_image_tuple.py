@@ -29,9 +29,9 @@ class InputImageTuple(caffe.Layer):
         assert len(top) > 1
         """Setup the layer"""
         self._tuple_len = 4
-        self._data_shape = (1, 227, 227)
         
         layer_params = yaml.load(self.param_str)
+        self._data_shape = tuple(layer_params['data_shape']) #(1, 227, 227)
         self._base_dir = layer_params['base_dir']
         self._keys_file = layer_params['keys_file']
         self._label_file = layer_params['label_file']
@@ -46,6 +46,12 @@ class InputImageTuple(caffe.Layer):
         for key in self._data_keys:
             assert self._num_images == len(key)
             
+        if 'shuffle' in layer_params and layer_params['shuffle_tuple'] == True:
+            idxs = np.arange(len(self._data_keys))
+            np.random.shuffle(idxs)
+            self._data_keys = self._data_keys[idxs]
+            self._data_labels = self.data_labels[idxs]
+            
         # Reshape image tops
         for i in range(self._num_images):
             top[i].reshape(*((self._batch_size,) + self._data_shape))
@@ -54,9 +60,13 @@ class InputImageTuple(caffe.Layer):
 
     def load_image(self, imname, shape):
         # Load image
-        im = np.array(Image.open(imname).convert('L'))
-	im = im[:,:,None]
-	#print(im.shape)
+        if self._data_shape[0] == 1:
+            im = np.array(Image.open(imname).convert('L'))
+            im = im[:,:,None]
+        else:
+            im = np.array(Image.open(imname))
+           
+        #print(im.shape)
         if im is None:
             print('could not read image: {}'.format(imname))
                                 
