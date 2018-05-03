@@ -8,3 +8,8 @@
 *.toc
 *.txt
 __pycache__
+*.pyc
+models
+snapshots
+logs
+
