@@ -4,7 +4,7 @@ import os
 import glob
 import cv2
 
-rounds = 10000
+rounds = 5000
 
 diff = 5
 
@@ -79,20 +79,38 @@ for r in range(rounds):
             break
 
     # create pair
-    outo = np.random.choice(order, 3, replace = False)
-    outosor = np.sort(outo)
-    outosorrev = outosor[::-1]
-
-    out = out[outo]
-
+    print(r, local_dir, out)
     for idx in out:
         keys_file.write("{}{:010}.png".format(local_dir, idx))
         keys_file.write(" ")
-        keys_file.write("\n")
+    keys_file.write("\n")
+    labels_file.write("{}\n".format(1))
+    
+    opt = ([0, 2, 1], [1, 0, 2])
+    rnd = np.random.randint(2)   
+    out = out[opt[rnd]]
+    
+    for idx in out:
+        keys_file.write("{}{:010}.png".format(local_dir, idx))
+        keys_file.write(" ")
+    keys_file.write("\n")
+    labels_file.write("{}\n".format(0))
+          
+        
+    #outo = np.random.choice(order, 3, replace = False)
+    #outosor = np.sort(outo)
+    #outosorrev = outosor[::-1]
 
-    if np.all(outosor == outo) or np.all(outosorrev == outo):
-        labels_file.write("{}\n".format(1))
-        print(r, out, "sorted")
-    else:
-        labels_file.write("{}\n".format(0))
-        print(r, out, "not sorted")
+    #out = out[outo]
+
+    #for idx in out:
+        #keys_file.write("{}{:010}.png".format(local_dir, idx))
+        #keys_file.write(" ")
+        #keys_file.write("\n")
+
+    #if np.all(outosor == outo) or np.all(outosorrev == outo):
+        #labels_file.write("{}\n".format(1))
+        #print(r, out, "sorted")
+    #else:
+        #labels_file.write("{}\n".format(0))
+        #print(r, out, "not sorted")
