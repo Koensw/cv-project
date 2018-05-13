@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import pykitti
 
 # Change this to the directory where you store KITTI data
-basedir = '/home/koen/uni/sp/kitti/'
+basedir = '/srv/glusterfs/patilv/Datasets/kitti/raw/'
 
 # Specify the dataset to load
 date = '2011_09_26'
@@ -17,7 +17,7 @@ drive = '0005'
 # Passing imformat='cv2' will convert images to uint8 and BGR for
 # easy use with OpenCV.
 # dataset = pykitti.raw(basedir, date, drive)
-dataset = pykitti.raw(basedir, date, drive, frames=range(0, 20, 5))
+dataset = pykitti.raw(basedir, date, drive, frames=range(0, 5))
 
 # dataset.calib:      Calibration data are accessible as a named tuple
 # dataset.timestamps: Timestamps are parsed into a list of datetime objects
@@ -28,14 +28,19 @@ dataset = pykitti.raw(basedir, date, drive, frames=range(0, 20, 5))
 # dataset.velo:       Generator to load velodyne scans as [x,y,z,reflectance]
 
 # Grab some data
-second_pose = next(iter(itertools.islice(dataset.oxts, 1, None))).T_w_imu
-first_gray = next(iter(dataset.gray))
-first_cam1 = next(iter(dataset.cam1))
-first_rgb = next(iter(dataset.rgb))
-first_cam2 = next(iter(dataset.cam2))
-third_velo = next(iter(itertools.islice(dataset.velo, 2, None)))
+first_gray = dataset.get_gray(0)
+first_cam1 = np.array(dataset.get_cam1(0))
+first_cam2 = np.array(dataset.get_cam2(0))
+first_velo = np.array(dataset.get_velo(0))
 
-first_velo = next(iter(dataset.velo))
+second_pose = next(iter(itertools.islice(dataset.oxts, 1, None))).T_w_imu
+#first_gray = next(iter(dataset.gray))
+#first_cam1 = next(iter(dataset.cam1))
+#first_rgb = next(iter(dataset.rgb))
+#first_cam2 = next(iter(dataset.cam2))
+#third_velo = next(iter(itertools.islice(dataset.velo, 2, None)))
+
+#first_velo = next(iter(dataset.velo))
 
 # Display some of the data
 np.set_printoptions(precision=4, suppress=True)
@@ -49,11 +54,11 @@ print('\nRGB stereo pair baseline [m]: ' + str(dataset.calib.b_rgb))
 print('\nFirst timestamp: ' + str(dataset.timestamps[0]))
 print('\nSecond IMU pose:\n' + str(second_pose))
 
-conv = dataset.calib.P_rect_00 @ dataset.calib.R_rect_00 @ dataset.calib.T_cam0_velo
+conv = np.matmul(dataset.calib.P_rect_00, np.matmul(dataset.calib.R_rect_00, dataset.calib.T_cam0_velo))
 data = np.c_[first_velo[:, 0:3], np.ones(first_velo.shape[0])]
 
-res = np.transpose(conv @ np.transpose(data))
-res[res[:, 2] < 5, 2] = 1e-4
+res = np.transpose(np.matmul(conv, np.transpose(data)))
+res[res[:, 2] < 1e-4, 2] = 1e-4
 
 lid_img = res[:, 0:2] / res[:, 2, None]
 
@@ -67,7 +72,8 @@ ax[0, 1].set_title('Right Gray Image (cam1)')
 ax[1, 0].imshow(first_cam2)
 ax[1, 0].set_title('Left RGB Image (cam2)')
 
-ax[1, 1].scatter(lid_img[:,0], lid_img[:,1], c=first_velo[:, 3])
+print(np.min(lid_img[:, 0]), np.min(lid_img[:, 0]), np.min(lid_img[:, 1]), np.max(lid_img[:, 1]))
+ax[1, 1].scatter(lid_img[:,0], lid_img[:,1], c=res[:, 2]) #first_velo[:, 3]
 ax[1, 1].set_xlim([0, first_cam2.shape[1]])
 ax[1, 1].set_ylim([first_cam2.shape[0], 0])
 ax[1, 1].set_title('Velodyne image (velo)')
