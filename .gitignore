@@ -7,6 +7,9 @@
 *.lot
 *.toc
 *.txt
+*.bcf
+*.run.xml
+*.out
 __pycache__
 *.pyc
 models
