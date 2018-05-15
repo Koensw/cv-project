@@ -11,10 +11,11 @@ layer {
     python_param {
         module: "input_image_tuple"
         layer: "InputImageTuple"
-        param_str: " { 'keys_file': '../../input/kitti_image_keys_train.txt', 'label_file' : '../../input/kitti_image_labels_train.txt', 'base_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/', 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        param_str: " { 'keys_file': '../../input/kitti_image_keys_train.txt', 'label_file' : '../../input/kitti_image_labels_train.txt', 'base_dir' : '/home/kwolters/logs/data/', 'direct': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
     }
     include { phase: TRAIN  }
 }
+#'/srv/glusterfs/patilv/Datasets/kitti/raw/'
 #layer {
     #name: "im1"
     #top: "im1"
@@ -46,7 +47,7 @@ layer {
     python_param {
         module: "input_image_tuple"
         layer: "InputImageTuple"
-        param_str: " { 'keys_file': '../../input/kitti_image_keys_test.txt', 'label_file' : '../../input/kitti_image_labels_train.txt', 'base_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/', 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        param_str: " { 'keys_file': '../../input/kitti_image_keys_test.txt', 'label_file' : '../../input/kitti_image_labels_test.txt', 'base_dir' : '/home/kwolters/logs/data/', 'direct': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
         # ../../kitti/
         # /srv/glusterfs/patilv/Datasets/kitti/raw/extracted/
     }
@@ -628,6 +629,7 @@ layer {
   top: "prob"
   type: "Softmax"
   bottom: "fc8_tri"
+  include { phase: TRAIN  }
 }
 layer {
   name: "accuracy"
@@ -645,13 +647,14 @@ layer {
   python_param {
     module: "visualize"
     layer: "Visualize"
-    param_str: "{ 'types': ['img', 'img', 'img', 'txt', 'txt'], plot_iter: 16, save_path: 'snapshots' }"
+    param_str: "{ 'types': ['img', 'img', 'img', 'txt', 'txt'], 'plot_iter': 16, 'save_path': 'snapshots', 'gray': True }"
   }
   bottom: "im1"
   bottom: "im2"
   bottom: "im3"
   bottom: "label"
   bottom: "prob"
+  include { phase: TRAIN  }
 }
 
 #layer {

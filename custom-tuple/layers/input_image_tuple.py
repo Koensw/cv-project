@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import pykitti
 import re
 
-from utils.kitti_blob_fetcher import KittiBlobFetcher
+from blob_fetcher import BlobFetcher, KittiBlobFetcher
 
 class InputImageTuple(caffe.Layer):
         
@@ -51,8 +51,16 @@ class InputImageTuple(caffe.Layer):
             
         top[-1].reshape(self._batch_size)
         
+        self._direct = False
+        if 'direct' in layer_params:
+           self._direct = layer_params['direct']
+           
+        if not self._direct:
+            self._fetcher = KittiBlobFetcher(self._base_dir)
+        else:
+            self._fetcher = BlobFetcher(self._base_dir)
+        
         # Start blobfetcher process and fetch first batch        
-        self._fetcher = KittiBlobFetcher(self._base_dir)
         self._fetcher.start()
         self.prepare_next_minibatch()
 

@@ -3,10 +3,11 @@ import numpy as np
 import os
 import glob
 import cv2
+import re
 
-rounds = 5000
-
+rounds = 10000
 diff = 5
+MOV_TRESHOLD = 15
 
 #array = np.arange(min_nr, max_nr+1)
 order = np.arange(0, 3)
@@ -14,11 +15,23 @@ order = np.arange(0, 3)
 labels_file = open("kitti_image_labels.txt", 'w')
 keys_file = open("kitti_image_keys.txt", 'w')
 
-base_name = "/srv/glusterfs/patilv/Datasets/kitti/raw/extracted"
-#local_file_dir = "2011_09_26_drive_0005_sync/image_02/data/"
-local_file_dir = "image_02/data/"
+#base_name = "/srv/glusterfs/patilv/Datasets/kitti/raw/extracted"
+##local_file_dir = "2011_09_26_drive_0005_sync/image_02/data/"
+#local_file_dir = "image_02/data/"
+base_name = "/home/kwolters/logs/data/"
+local_file_dir = ""
+
 
 dirs = glob.glob(os.path.join(base_name, "*_sync"))
+# REMOVE FAULTY DIR
+for d in dirs:
+    mtch = re.match(".*/([0-9_]+)_drive_([0-9]+)_sync", d)
+    if mtch is None: raise Exception("invalid kitti directory")
+    date, drive = mtch.groups()
+    if date == "2011_09_26" and drive == "0009": 
+        dirs.remove(d)
+        continue
+
 dir_size = []
 
 for d in dirs:
@@ -77,7 +90,7 @@ for r in range(rounds):
         #cap.release()
         #cv2.destroyAllWindows()
     
-        if magind < 30:
+        if magind < MOV_TRESHOLD:
             print("Retry", magind)
             pass
             #wait = 0

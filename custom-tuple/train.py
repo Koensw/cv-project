@@ -21,6 +21,7 @@ def addPath(path):
 
 addPath('.')
 addPath('./layers')
+addPath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'utils'))
 
 ## CHECK RUN MODE
 if "SGE_GPU" in os.environ and os.environ["SGE_GPU"] != "":
@@ -39,9 +40,9 @@ print("Preparing solver")
 solver_path = sys.argv[1]
 solver = caffe.SGDSolver(solver_path)
 
-max_iters = 10000
+max_iters = 10001
 snapshot_iter = 100
-log_iter = 1
+log_iter = 5
 
 assert (snapshot_iter % log_iter) == 0
 

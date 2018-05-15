@@ -116,7 +116,7 @@ def visualize_activations(net, layer_name, image_layer_name, padding=4, box_size
     # Plot figure
     plt.figure(figsize=(10, 10))
     plt.axis('off')
-    plt.imshow(result, interpolation='nearest')
+    plt.imshow(result[:, :, 0], cmap='gray', interpolation='nearest')
  
     # Save plot if filename is set
     if filename != '':
