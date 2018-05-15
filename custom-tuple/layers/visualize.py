@@ -24,7 +24,11 @@ class Visualize(caffe.Layer):
         self._save = False
         if "save_path" in layer_params:
             self._save_path = layer_params['save_path']
-        self._save = True
+            self._save = True
+            
+        self._gray = False
+        if "gray" in layer_params:
+            self._gray = True
         
         assert len(self._types) == len(bottom)
         self._batch_size = bottom[0].shape[0]
@@ -59,12 +63,13 @@ class Visualize(caffe.Layer):
             if tp == 'img':
                 for j in range(self._batch_size):
                     im = np.transpose(bottom[i].data[j], axes=(1, 2, 0))
-                    if im.shape[2] == 1:
-                            axarr[i, j].imshow(im[:,:,0], cmap="gray")
+                    if im.shape[2] == 1 or self._gray:
+                        axarr[i, j].imshow(im[:,:,0], cmap="gray")
                     else:
-                            axarr[i, j].imshow(im)	
-                            axarr[i, j].get_xaxis().set_visible(False)
-                            axarr[i, j].get_yaxis().set_visible(False)
+                        axarr[i, j].imshow(im)	
+                        
+                    axarr[i, j].get_xaxis().set_visible(False)
+                    axarr[i, j].get_yaxis().set_visible(False)
             elif tp == 'txt':
                 #print(bottom[i].data)
                 for j in range(self._batch_size):

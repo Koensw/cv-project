@@ -1,4 +1,9 @@
+from __future__ import print_function
+
+import re
+import sys
 import os
+import pykitti
 import numpy as np
 from PIL import Image
 from skimage import transform 
@@ -6,14 +11,15 @@ from scipy import ndimage
 import matplotlib.pyplot as plt
 from multiprocessing import Process, Queue
 
-class KittiBlobFetcher(Process):
-    def __init__(self, basedir):
-        super(KittiBlobFetcher, self).__init__(name='blob_fetcher')
+class BlobFetcher(Process):
+    def __init__(self, basedir, only_base = False):
+        super(BlobFetcher, self).__init__(name='blob_fetcher')
         
         self._iqueue = Queue()
         self._oqueue = Queue()
         
         self._basedir = basedir
+        self._only_base = only_base
         
     def channel_split(self, im):
         assert im.shape[2] == 3
@@ -24,7 +30,7 @@ class KittiBlobFetcher(Process):
     def jitter_image(self, im):
         assert im.shape[2] == 3
                 
-        # multiply channel
+        # multiply channels
         for ch in range(3):
             mult = np.random.uniform(0.8, 1.2)
             im[:,:,ch] *= mult
@@ -34,22 +40,64 @@ class KittiBlobFetcher(Process):
         im += shiftVal
         
         # add sptial jitter
-        nim = im
-        #for i in range(im.shape[0]):
-            #for j in range(im.shape[1]):
-                #if np.random.randint(2) == 1:
-                    #r = np.random.randint(-3, 3)
-                    #c = np.random.randint(-3, 3)
-                    #if 0 <= i+r < im.shape[0] and 0 <= j+c < im.shape[1]:
-                        #nim[i+r, j+c] = im[i, j]
-                
+        noise = np.random.uniform(-0.1,0.1, (im.shape[0], im.shape[1]))
+        for ch in range(3):
+            im[:,:,ch] += noise
+        
         # bring values to [0,1] range
-        #im = (nim - np.min(nim)) / (np.max(nim) - np.min(nim))
-        im = nim
         im[im < 0] = 0
         im[im > 1] = 1
         
         return im
+
+    def load_image(self, imname, shape):
+        loc = os.path.join(self._basedir, imname)
+        if self._only_base:
+            folder = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(imname)))) # FIXME
+            if folder == '2011_09_26_drive_0009_sync': folder = "2011_09_26_drive_0051_sync" # FIXME
+            
+            loc = os.path.join(self._basedir, folder, os.path.basename(imname))
+        
+        im = np.array(Image.open(loc)).astype(np.float32) / 255.0
+        im = im[:, :, :3] # skip optional 4th dimension
+        assert im.shape[0] == shape[2] and im.shape[1] == shape[3] and im.shape[2] == shape[1]
+                
+        im = self.jitter_image(im)
+        im = np.transpose(im, axes = (2, 0, 1))
+        
+        return im
+    
+    def valid(self):
+        return self._iqueue.empty() and self._oqueue.empty()
+    
+    def size(self):
+        return self._iqueue.size()
+    
+    def get(self):
+        return self._oqueue.get()
+                
+    def req(self, loc, shape):
+        self._iqueue.put((loc, shape))
+            
+    def run(self):
+        # load dataset
+        try:
+            # fetching blobs
+            while True:
+                loc, shape = self._iqueue.get()
+                self._oqueue.put(self.load_image(loc, shape))
+                
+        except KeyboardInterrupt:
+            return
+
+
+class KittiBlobFetcher(BlobFetcher):
+    def __init__(self, basedir, subdate = None, subdrive = None, verbose = True):
+        super(KittiBlobFetcher, self).__init__(basedir)
+        
+        self._subdate = subdate
+        self._subdrive = subdrive
+        self._verbose = verbose
 
     def load_image(self, imname, shape):
         mtch = re.match("^[a-zA-Z/]+/([0-9_]+)_drive_([0-9]+).*/([0-9]+).[a-z]{3,4}", imname)
@@ -65,7 +113,8 @@ class KittiBlobFetcher(Process):
         im = np.array(dataset.get_rgb(frame)[0]) #np.array(Image.open(imname))
            
         if im is None:
-            print('could not read image: {}'.format(imname))
+            raise Exception('could not read image: {}'.format(imname))
+            
                                             
         # Resize if necessary
         h = im.shape[0]
@@ -134,34 +183,33 @@ class KittiBlobFetcher(Process):
         #if caffe_order:
             #im = np.transpose(im, axes = (2, 0, 1))
         return im
-    
-    def valid(self):
-        return self._iqueue.empty() and self._oqueue.empty()
-    
-    def get(self):
-        return self._oqueue.get()
-                
-    def req(self, loc, shape):
-        self._iqueue.put((loc, shape))
             
     def run(self):
         # load dataset
-        dirs = sorted(os.listdir(self._basedir + '/extracted'))
-        self._datasets = {}
-        print('loading datasets: ', end='')
-        for dr in dirs:
-            mtch = re.match("([0-9_]+)_drive_([0-9]+)_sync", dr)
-            if mtch is None: continue
-            date, drive = mtch.groups()
+        try:
+            dirs = sorted(os.listdir(self._basedir + '/extracted'))
+            self._datasets = {}
+            if self._verbose: print('loading datasets: ', end='')
+            for dr in dirs:
+                mtch = re.match("([0-9_]+)_drive_([0-9]+)_sync", dr)
+                if mtch is None: continue
+                date, drive = mtch.groups()
+                
+                if (self._subdate != None and date != self._subdate) or (self._subdrive != None and drive != self._subdrive): continue
 
-            print('.', end='')
-            sys.stdout.flush()
-        
-            self._datasets[date + "_" + drive] = pykitti.raw(self._basedir, date, drive)
-        print()
-        
-        # fetching blobs
-        while True:
-            loc, shape = self._iqueue.get()
-            self._oqueue.put(self.load_image(loc, shape))
-            #print('image processed {} todo'.format(self._iqueue.qsize()))
+                if self._verbose: 
+                    print('.', end='')
+                    sys.stdout.flush()
+            
+                self._datasets[date + "_" + drive] = pykitti.raw(self._basedir, date, drive)
+            if self._verbose: print()
+            
+            # fetching blobs
+            while True:
+                loc, shape = self._iqueue.get()
+                self._oqueue.put(self.load_image(loc, shape))
+                #print('image processed {} todo'.format(self._iqueue.qsize()))
+                
+        except KeyboardInterrupt:
+            #print("Exception occurred, stopping...")
+            return
