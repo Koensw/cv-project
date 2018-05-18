@@ -9,7 +9,7 @@ print("Loading libraries")
 import matplotlib
 matplotlib.use("Agg")
 
-ROUNDS = 5000//8
+ROUNDS = 2 #5000//8
 
 import numpy as np
 import os

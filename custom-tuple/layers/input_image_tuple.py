@@ -39,11 +39,11 @@ class InputImageTuple(caffe.Layer):
         for key in self._data_keys:
             assert self._num_images == len(key)
             
-        if 'shuffle' in layer_params and layer_params['shuffle_tuple'] == True:
+        if 'shuffle' in layer_params and layer_params['shuffle'] == True:
             idxs = np.arange(len(self._data_keys))
             np.random.shuffle(idxs)
             self._data_keys = self._data_keys[idxs]
-            self._data_labels = self.data_labels[idxs]
+            self._data_labels = self._data_labels[idxs]
             
         # Reshape image tops
         for i in range(self._num_images):

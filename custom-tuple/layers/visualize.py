@@ -24,6 +24,8 @@ class Visualize(caffe.Layer):
         self._save = False
         if "save_path" in layer_params:
             self._save_path = layer_params['save_path']
+            if not os.path.exists(self._save_path):
+                os.makedirs(self._save_path)
             self._save = True
             
         self._gray = False

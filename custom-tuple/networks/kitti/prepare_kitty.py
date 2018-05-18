@@ -5,9 +5,11 @@ import glob
 import cv2
 import re
 
-rounds = 10000
-diff = 5
+ROUNDS = 5000
+DIFF = 5
 MOV_TRESHOLD = 15
+
+MODE = 'upper'
 
 #array = np.arange(min_nr, max_nr+1)
 order = np.arange(0, 3)
@@ -33,27 +35,39 @@ for d in dirs:
         continue
 
 dir_size = []
-
+total_size = 0
 for d in dirs:
     local_dir = os.path.join(base_name, d, local_file_dir)
     
     dir_size.append(len(os.listdir(local_dir)))
+    total_size += dir_size[-1]
+    
+print(total_size)
+size_to_idx = np.zeros(total_size, dtype=np.int32) 
+cur_idx = 0
+for i in range(len(dirs)):
+    #for j in range(dir_size[i]):
+    size_to_idx[cur_idx:cur_idx+dir_size[i]] = i
+    cur_idx += dir_size[i]
 
-for r in range(rounds):
+for r in range(ROUNDS):
     # prepare
     while True:
-        dir_idx = np.random.randint(len(dirs))
+        dir_idx = size_to_idx[np.random.randint(total_size)]
         local_dir = os.path.join(base_name,  dirs[dir_idx], local_file_dir)
         
         min_nr = 0
         max_nr = dir_size[dir_idx]
         
-        min_nr += diff
-        max_nr -= diff
+        if MODE == 'upper': min_nr = max_nr//2
+        elif MODE == 'lower': max_nr = max_nr//2
+        
+        min_nr += DIFF
+        max_nr -= DIFF
         
         idx = np.random.randint(min_nr, max_nr)
 
-        out = np.arange(idx - diff, idx + diff + 1, diff)
+        out = np.arange(idx - DIFF, idx + DIFF + 1, DIFF)
         
         # check image suitability
         frame1 = cv2.imread("{}{:010}.png".format(local_dir, out[0]))
@@ -109,7 +123,7 @@ for r in range(rounds):
             break
         
     # create pair
-    print(r, local_dir, out)
+    print(r, local_dir, out, min_nr, max_nr)
     for idx in out:
         keys_file.write("{}{:010}.png".format(local_dir, idx))
         keys_file.write(" ")
@@ -125,6 +139,9 @@ for r in range(rounds):
         keys_file.write(" ")
     keys_file.write("\n")
     labels_file.write("{}\n".format(0))
+    
+    keys_file.flush()
+    labels_file.flush()
           
         
     #outo = np.random.choice(order, 3, replace = False)

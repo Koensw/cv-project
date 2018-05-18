@@ -629,7 +629,7 @@ layer {
   top: "prob"
   type: "Softmax"
   bottom: "fc8_tri"
-  include { phase: TRAIN  }
+#  include { phase: TRAIN  }
 }
 layer {
   name: "accuracy"
@@ -647,7 +647,7 @@ layer {
   python_param {
     module: "visualize"
     layer: "Visualize"
-    param_str: "{ 'types': ['img', 'img', 'img', 'txt', 'txt'], 'plot_iter': 16, 'save_path': 'snapshots', 'gray': True }"
+    param_str: "{ 'types': ['img', 'img', 'img', 'txt', 'txt'], 'plot_iter': 512, 'save_path': 'snapshots/tuple', 'gray': True }"
   }
   bottom: "im1"
   bottom: "im2"

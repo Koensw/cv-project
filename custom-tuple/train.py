@@ -40,8 +40,8 @@ print("Preparing solver")
 solver_path = sys.argv[1]
 solver = caffe.SGDSolver(solver_path)
 
-max_iters = 10001
-snapshot_iter = 100
+max_iters = 100001
+snapshot_iter = 200
 log_iter = 5
 
 assert (snapshot_iter % log_iter) == 0
@@ -50,7 +50,7 @@ def snapshot(solver, snap_path):
     net = solver.net
 
     if not os.path.exists(snap_path):
-        os.makedirs(snap_path);
+        os.makedirs(snap_path)
 
     filename = 'snapshot_' + 'iter_{:d}'.format(solver.iter) + '.caffemodel';
     filename = os.path.join(snap_path, filename);
@@ -65,7 +65,8 @@ np.set_printoptions(precision=2)
 
 while solver.iter < max_iters:
     if (solver.iter % snapshot_iter) == 0:
-        snapshot(solver, "snapshots")
+        split = os.path.basename(sys.argv[1]).split('_')
+        snapshot(solver, "snapshots/" + split[0])
     
     print("Stepping...")
     solver.step(log_iter)
@@ -79,4 +80,3 @@ solver.net.save("final_model.caffemodel")
 #trainer = WatchTrainer(solverPath, solver);
 #trainer.init_logging();
 #trainer.train_model(numIter, logStep, snapshotIter, track_indiv_loss=True);
-        
