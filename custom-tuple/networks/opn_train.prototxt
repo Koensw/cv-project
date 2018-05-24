@@ -1,40 +1,4 @@
 ### INPUT ###
-#layer {
-  #name: "data"
-  #type: "Python"
-  #top: "im1"
-  #top: "im2"
-  #top: "im3"
-  #top: "im4"
-  #top: "label"
-  #include {
-    #phase: TRAIN
-  #}
-  #python_param {
-    #module: "UCF_datalayers"
-    #layer: "train_temporal_four"
-    #param_str: "{\'inputtype\':1, \'batchsize\': 64, \'mean\': (100.74, 96.34, 89.37), \'trainval\': \'train\' }"
-  #}
-#}
-#layer {
-  #name: "data"
-  #type: "Python"
-  #top: "im1"
-  #top: "im2"
-  #top: "im3"
-  #top: "im4"
-  #top: "label"
-  #include {
-    #phase: TEST
-  #}
-  #python_param {
-    ##module: "UCF_datalayers"
-    #module: "ACT_datalayers"
-    #layer: "train_temporal_four"
-    #param_str: "{\'inputtype\':1, \'batchsize\': 64, \'mean\': (100.74, 96.34, 89.37), \'trainval\': \'val\'}"
-  #}
-#}
-
 name: "CaffeNet"
 
 ### INPUT ###
@@ -48,8 +12,10 @@ layer {
     python_param {
         module: "input_image_tuple"
         layer: "InputImageTuple"
-        param_str: " { 'keys_file': '../../input/kitti_image_keys_train.txt', 'label_file' : '../../input/kitti_image_labels_train.txt', 'base_dir' : '/home/kwolters/logs/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        #param_str: " { 'keys_file': '../../input/kitti_image_keys_train.txt', 'label_file': '../../input/kitti_image_labels_train.txt', 'base_dir': '/home/kwolters/logs/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        param_str: " { 'keys_file': '../../input/test/kitti_image_keys.txt', 'label_file': '../../input/test/kitti_image_labels.txt', 'base_dir': '/home/kwolters/logs/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
     }
+
     include { phase: TRAIN  }
 }
 layer {
@@ -62,9 +28,9 @@ layer {
     python_param {
         module: "input_image_tuple"
         layer: "InputImageTuple"
-        #param_str: " { 'keys_file': '../../input/kitti_image_keys_test.txt', 'label_file' : '../../input/kitti_image_labels_test.txt', 'base_dir' : '/home/kwolters/logs/data/', 'direct': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        param_str: " { 'keys_file': '../../input/kitti_image_keys_test.txt', 'label_file' : '../../input/kitti_image_labels_test.txt', 'base_dir' : '/home/kwolters/logs/data/', 'direct': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
         # ../../kitti/
-        param_str: " { 'keys_file': './networks/kitti/example_keys_test.txt', 'label_file' : './networks/kitti/example_labels_test.txt', 'base_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/', 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        #param_str: " { 'keys_file': './networks/kitti/example_keys_test.txt', 'label_file' : './networks/kitti/example_labels_test.txt', 'base_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/', 'batch_size': 16, 'data_shape': [3, 227, 227] }"
         # /srv/glusterfs/patilv/Datasets/kitti/raw/extracted/
     }
     include { phase: TEST  }
@@ -1374,7 +1340,7 @@ layer {
   top: "prob"
   type: "Softmax"
   bottom: "fc8_tp"
-#  include { phase: TRAIN  }
+  include { phase: TRAIN  }
 }
 
 ### VISUALIZATION ###

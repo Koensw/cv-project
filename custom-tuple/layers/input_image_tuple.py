@@ -54,7 +54,7 @@ class InputImageTuple(caffe.Layer):
         self._direct = False
         if 'direct' in layer_params:
            self._direct = layer_params['direct']
-           
+                      
         if not self._direct:
             self._fetcher = KittiBlobFetcher(self._base_dir)
         else:

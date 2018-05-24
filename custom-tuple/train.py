@@ -1,6 +1,6 @@
 from __future__ import print_function
 import sys
-if len(sys.argv) != 2:
+if len(sys.argv) != 2 and len(sys.argv) != 3:
     print('ERROR: pass solver prototxt as argument')
     sys.exit(1)
 
@@ -66,6 +66,7 @@ np.set_printoptions(precision=2)
 while solver.iter < max_iters:
     if (solver.iter % snapshot_iter) == 0:
         split = os.path.basename(sys.argv[1]).split('_')
+        if len(sys.argv) == 3: split[0] += "-" + sys.argv[2]
         snapshot(solver, "snapshots/" + split[0])
     
     print("Stepping...")

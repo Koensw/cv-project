@@ -32,15 +32,15 @@ class BlobFetcher(Process):
                 
         # multiply channels
         for ch in range(3):
-            mult = np.random.uniform(0.8, 1.2)
+            mult = np.random.uniform(0.9, 1.1)
             im[:,:,ch] *= mult
             
         # shift bias   
-        shiftVal = np.random.uniform(-0.2, 0.2) 
+        shiftVal = np.random.uniform(-0.1, 0.1) 
         im += shiftVal
         
         # add sptial jitter
-        noise = np.random.uniform(-0.1,0.1, (im.shape[0], im.shape[1]))
+        noise = np.random.uniform(-0.05,0.05, (im.shape[0], im.shape[1]))
         for ch in range(3):
             im[:,:,ch] += noise
         
@@ -60,7 +60,10 @@ class BlobFetcher(Process):
         
         im = np.array(Image.open(loc)).astype(np.float32) / 255.0
         im = im[:, :, :3] # skip optional 4th dimension
-        assert im.shape[0] == shape[2] and im.shape[1] == shape[3] and im.shape[2] == shape[1]
+        #print(im.shape, shape)
+        if not (im.shape[0] == shape[2] and im.shape[1] == shape[3] and im.shape[2] == shape[1]):
+            raise Exception("Incorrect image shape {} expecting {}".format(im.shape, shape))
+            #return None
                 
         im = self.jitter_image(im)
         im = np.transpose(im, axes = (2, 0, 1))
@@ -205,9 +208,13 @@ class KittiBlobFetcher(BlobFetcher):
             if self._verbose: print()
             
             # fetching blobs
+            lim = None
             while True:
                 loc, shape = self._iqueue.get()
-                self._oqueue.put(self.load_image(loc, shape))
+                im = self.load_image(loc, shape)
+                if im == None: im = lim # FIXME: reuse last image in case of error
+                self._oqueue.put(im)
+                lim = im
                 #print('image processed {} todo'.format(self._iqueue.qsize()))
                 
         except KeyboardInterrupt:

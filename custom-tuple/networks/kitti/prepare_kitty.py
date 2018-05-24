@@ -5,11 +5,11 @@ import glob
 import cv2
 import re
 
-ROUNDS = 5000
+ROUNDS = 10000
 DIFF = 5
 MOV_TRESHOLD = 15
 
-MODE = 'upper'
+MODE = 'all'
 
 #array = np.arange(min_nr, max_nr+1)
 order = np.arange(0, 3)
