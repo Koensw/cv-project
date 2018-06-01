@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from multiprocessing import Process, Queue
 
 class BlobFetcher(Process):
-    def __init__(self, basedir, only_base = False):
+    def __init__(self, basedir, only_base = False, transform = False, jitter = True, channel_split = False):
         super(BlobFetcher, self).__init__(name='blob_fetcher')
         
         self._iqueue = Queue()
@@ -21,6 +21,10 @@ class BlobFetcher(Process):
         self._basedir = basedir
         self._only_base = only_base
         
+        self._transform = transform
+        self._jitter = jitter
+        self._channel_split = channel_split
+        
     def channel_split(self, im):
         assert im.shape[2] == 3
         
@@ -28,10 +32,10 @@ class BlobFetcher(Process):
         return im[:,:,chn:chn+1]
 
     def jitter_image(self, im):
-        assert im.shape[2] == 3
+        #assert im.shape[2] == 3
                 
         # multiply channels
-        for ch in range(3):
+        for ch in range(im.shape[2]):
             mult = np.random.uniform(0.9, 1.1)
             im[:,:,ch] *= mult
             
@@ -41,7 +45,7 @@ class BlobFetcher(Process):
         
         # add sptial jitter
         noise = np.random.uniform(-0.05,0.05, (im.shape[0], im.shape[1]))
-        for ch in range(3):
+        for ch in range(im.shape[2]):
             im[:,:,ch] += noise
         
         # bring values to [0,1] range
@@ -58,14 +62,41 @@ class BlobFetcher(Process):
             
             loc = os.path.join(self._basedir, folder, os.path.basename(imname))
         
-        im = np.array(Image.open(loc)).astype(np.float32) / 255.0
-        im = im[:, :, :3] # skip optional 4th dimension
+        imrd = Image.open(loc)
+        if shape[1] == 1: imrd = imrd.convert('L')
+        
+        im = np.array(imrd).astype(np.float32) / 255.0
+        if len(im.shape) == 2: 
+            im = im[:, :, None]
+        if im.shape[2] > 3:
+            im = im[:, :, :3] # skip optional 4th dimension
         #print(im.shape, shape)
-        if not (im.shape[0] == shape[2] and im.shape[1] == shape[3] and im.shape[2] == shape[1]):
-            raise Exception("Incorrect image shape {} expecting {}".format(im.shape, shape))
-            #return None
+        if not self._transform:
+            if not (im.shape[0] == shape[2] and im.shape[1] == shape[3] and im.shape[2] == shape[1]):
+                raise Exception("Incorrect image shape {} expecting {}".format(im.shape, shape))
+        else:   
+            # Resize if necessary
+            h = im.shape[0]
+            w = im.shape[1]
+            if shape[2] != h or shape[3] != w:
+                # apply anti aliasing
+                factors = (np.asarray(im.shape, dtype=float) /
+                        np.asarray(shape[2:] + (shape[1],), dtype=float))
+                anti_aliasing_sigma = np.maximum(0, (factors - 1) / 2)
                 
-        im = self.jitter_image(im)
+                im = ndimage.gaussian_filter(im, anti_aliasing_sigma)
+                
+                # resize to requested size
+                im = transform.resize(im, shape[2:], mode = 'reflect')
+        
+        # Jitter and split image
+        im = im.astype(np.float32)
+        
+        if self._jitter:
+            im = self.jitter_image(im)
+        if self._channel_split:
+            im = self.channel_split(im)
+            
         im = np.transpose(im, axes = (2, 0, 1))
         
         return im
@@ -91,6 +122,7 @@ class BlobFetcher(Process):
                 self._oqueue.put(self.load_image(loc, shape))
                 
         except KeyboardInterrupt:
+            self.terminate()
             return
 
 
@@ -218,5 +250,5 @@ class KittiBlobFetcher(BlobFetcher):
                 #print('image processed {} todo'.format(self._iqueue.qsize()))
                 
         except KeyboardInterrupt:
-            #print("Exception occurred, stopping...")
+            self.terminate()
             return

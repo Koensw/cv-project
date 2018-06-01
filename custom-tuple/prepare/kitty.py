@@ -11,7 +11,7 @@ def addPath(path):
     if path not in sys.path:
         sys.path.insert(0, path)
 
-addPath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'utils'))
+addPath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../utils'))
 
 from blob_fetcher import KittiBlobFetcher
 import glob

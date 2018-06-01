@@ -1,6 +1,6 @@
 from __future__ import print_function
 import sys
-if len(sys.argv) != 2 and len(sys.argv) != 3:
+if len(sys.argv) != 2:
     print('ERROR: pass solver prototxt as argument')
     sys.exit(1)
 
@@ -40,9 +40,9 @@ print("Preparing solver")
 solver_path = sys.argv[1]
 solver = caffe.SGDSolver(solver_path)
 
-max_iters = 100001
+max_iters = 20001
 snapshot_iter = 200
-log_iter = 5
+log_iter = 10
 
 assert (snapshot_iter % log_iter) == 0
 
@@ -58,22 +58,22 @@ def snapshot(solver, snap_path):
     return filename;
 
 print('Checking snapshot')
-filename = snapshot(solver, "snapshots")
+filename = snapshot(solver, os.path.join(os.path.dirname(sys.argv[1]), '..'))
 
 print("Start training")
 np.set_printoptions(precision=2)
 
 while solver.iter < max_iters:
     if (solver.iter % snapshot_iter) == 0:
-        split = os.path.basename(sys.argv[1]).split('_')
-        if len(sys.argv) == 3: split[0] += "-" + sys.argv[2]
-        snapshot(solver, "snapshots/" + split[0])
+        #split = os.path.basename(sys.argv[1]).split('_')
+        #if len(sys.argv) == 3: split[0] += "-" + sys.argv[2]
+        snapshot(solver, os.path.join(os.path.dirname(sys.argv[1]), '../models'))
     
     print("Stepping...")
     solver.step(log_iter)
 
 print("Finished, saving final model")
-solver.net.save("final_model.caffemodel")
+solver.net.save(os.path.join(os.path.dirname(sys.argv[1]), '..'))
 
 #numIter = 100000;
 #logStep = 20;

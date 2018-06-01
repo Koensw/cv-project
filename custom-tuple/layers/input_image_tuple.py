@@ -20,9 +20,7 @@ class InputImageTuple(caffe.Layer):
     def setup(self, bottom, top):
         assert len(bottom) == 0
         assert len(top) > 1
-        """Setup the layer"""
-        self._tuple_len = 4
-        
+        """Setup the layer"""        
         layer_params = yaml.load(self.param_str)
         self._data_shape = tuple(layer_params['data_shape']) #(1, 227, 227)
         self._base_dir = layer_params['base_dir']
@@ -44,6 +42,11 @@ class InputImageTuple(caffe.Layer):
             np.random.shuffle(idxs)
             self._data_keys = self._data_keys[idxs]
             self._data_labels = self._data_labels[idxs]
+            
+        self._saliency_dir = ''
+        self._saliency_idx = 0
+        if 'saliency_dir' in layer_params:
+            self._saliency_dir = layer_params['saliency_dir']
             
         # Reshape image tops
         for i in range(self._num_images):
@@ -73,7 +76,7 @@ class InputImageTuple(caffe.Layer):
             batch_keys = self._data_keys[self._key_index]
             #should_flip_image = True if (self._lr_flip_aug and np.random.randint(2) == 1) else False;
             for t in range(self._num_images):
-                im_name = batch_keys[t];
+                im_name = batch_keys[t]
 
                 im_path = os.path.join(self._base_dir, 'extracted', im_name)
                 #im_datas[t][b,:] = self.load_image(im_path, shape=(self._batch_size,) + self._data_shape)
@@ -96,7 +99,6 @@ class InputImageTuple(caffe.Layer):
 
     def forward(self, bottom, top):
         """Get blobs and copy them into this layer's top blob vector."""
-        
         start = time.time()
         
         #if hasattr(self, '_last_time'):
@@ -118,8 +120,30 @@ class InputImageTuple(caffe.Layer):
         self._last_time = time.time()
 
     def backward(self, top, propagate_down, bottom):
-        """This layer does not propagate gradients."""
-        pass
+        """Generate saliency maps."""
+        if self._saliency_dir == '': return
+        
+        for i in range(self._num_images):
+            delta = abs(top[i].diff[0])
+            delta = delta - delta.min()           # Subtract min
+            delta = delta / delta.max()           # Normalize by dividing by max 
+            saliency = np.amax(delta,axis=0)      # Find max across RGB channels 
+            
+            plt.figure(figsize=(10, 10))
+            plt.subplot(1,2,1)
+            plt.imshow (top[i].data[0][0,:,:], cmap='gray')
+            plt.axis('off')
+
+            plt.subplot(1,2,2)
+            plt.imshow (saliency, cmap='gray')
+            plt.axis('off')
+
+            plt.tight_layout()
+            plt.subplots_adjust(wspace=0, hspace=0)
+            plt.savefig(os.path.join(self._saliency_dir, "saliency_{}-{}".format(self._saliency_idx + 1, i)))
+            plt.close()
+        
+        self._saliency_idx = self._saliency_idx + 1
 
     def reshape(self, bottom, top):
         """Reshaping happens during the call to forward."""

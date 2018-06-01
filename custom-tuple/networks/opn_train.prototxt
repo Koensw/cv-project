@@ -12,8 +12,11 @@ layer {
     python_param {
         module: "input_image_tuple"
         layer: "InputImageTuple"
-        #param_str: " { 'keys_file': '../../input/kitti_image_keys_train.txt', 'label_file': '../../input/kitti_image_labels_train.txt', 'base_dir': '/home/kwolters/logs/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
-        param_str: " { 'keys_file': '../../input/test/kitti_image_keys.txt', 'label_file': '../../input/test/kitti_image_labels.txt', 'base_dir': '/home/kwolters/logs/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        #param_str: " { 'keys_file': '../../input/kitti_image_keys_train.txt', 'label_file': '../../input/kitti_image_labels_train.txt', 'base_dir': '/home/kwolters/sp/data/kitti/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        #param_str: " { 'keys_file': '../../input/test/kitti_image_keys.txt', 'label_file': '../../input/test/kitti_image_labels.txt', 'base_dir': '/home/kwolters/logs/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
+        #param_str: " { 'keys_file': '../../input/test/train/odo_image_keys.txt', 'label_file': '../../input/test/train/odo_image_labels.txt', 'base_dir': '/home/kwolters/sp/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [1, 227, 227] }"
+        param_str: " { 'keys_file': '../../input/time_diff/train/odo_image_keys.txt', 'label_file': '../../input/time_diff/train/odo_image_labels.txt', 'base_dir': '/home/kwolters/sp/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [1, 227, 227] }"
+        #param_str: " { 'keys_file': '../../input/lid_image_keys_train.txt', 'label_file': '../../input/lid_image_labels_train.txt', 'base_dir': '/home/kwolters/sp/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [1, 227, 227] }"
     }
 
     include { phase: TRAIN  }
@@ -28,10 +31,10 @@ layer {
     python_param {
         module: "input_image_tuple"
         layer: "InputImageTuple"
-        param_str: " { 'keys_file': '../../input/kitti_image_keys_test.txt', 'label_file' : '../../input/kitti_image_labels_test.txt', 'base_dir' : '/home/kwolters/logs/data/', 'direct': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
-        # ../../kitti/
+        #param_str: " { 'keys_file': '../../input/kitti_image_keys_test.txt', 'label_file' : '../../input/kitti_image_labels_test.txt', 'base_dir' : '/home/kwolters/logs/data/', 'direct': True, 'batch_size': 16, 'data_shape': [3, 227, 227] }"
         #param_str: " { 'keys_file': './networks/kitti/example_keys_test.txt', 'label_file' : './networks/kitti/example_labels_test.txt', 'base_dir' : '/srv/glusterfs/patilv/Datasets/kitti/raw/', 'batch_size': 16, 'data_shape': [3, 227, 227] }"
-        # /srv/glusterfs/patilv/Datasets/kitti/raw/extracted/
+        param_str: " { 'keys_file': '../../input/time_diff/test/odo_image_keys.txt', 'label_file': '../../input/time_diff/test/odo_image_labels.txt', 'base_dir': '/home/kwolters/sp/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [1, 227, 227] }"
+        #param_str: " { 'keys_file': '../../input/lid_image_keys_test.txt', 'label_file': '../../input/lid_image_labels_test.txt', 'base_dir': '/home/kwolters/sp/data/', 'direct': True, 'shuffle': True, 'batch_size': 16, 'data_shape': [1, 227, 227] }"
     }
     include { phase: TEST  }
 }
@@ -69,7 +72,7 @@ layer {
     num_output: 96
     pad: 0
     kernel_size: 11
-    group: 1
+    #group: 1
     stride: 4
     weight_filler {
       type: "gaussian"
@@ -128,7 +131,7 @@ layer {
     num_output: 256
     pad: 2
     kernel_size: 5
-    group: 2
+    #group: 2
     stride: 1
     weight_filler {
       type: "gaussian"
@@ -187,7 +190,7 @@ layer {
     num_output: 384
     pad: 1
     kernel_size: 3
-    group: 1
+    #group: 1
     stride: 1
     weight_filler {
       type: "gaussian"
@@ -281,7 +284,7 @@ layer {
     num_output: 384
     pad: 1
     kernel_size: 3
-    group: 2
+    #group: 2
     stride: 1
     weight_filler {
       type: "gaussian"
@@ -375,7 +378,7 @@ layer {
     num_output: 256
     pad: 1
     kernel_size: 3
-    group: 2
+    #group: 2
     stride: 1
     weight_filler {
       type: "gaussian"
@@ -1331,16 +1334,14 @@ layer {
   bottom: "fc8_tp"
   bottom: "label"
   top: "acc"
-  #include {
-    #phase: TEST
-  #}
+  #include { phase: TEST }
 }
 layer {
   name: "prob"
   top: "prob"
   type: "Softmax"
   bottom: "fc8_tp"
-  include { phase: TRAIN  }
+  #include { phase: TRAIN  }
 }
 
 ### VISUALIZATION ###

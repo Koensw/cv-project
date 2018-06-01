@@ -1,4 +1,5 @@
 from __future__ import print_function
+import multi
 import numpy as np
 import os
 import glob
@@ -12,7 +13,7 @@ MOV_TRESHOLD = 15
 MODE = 'all'
 
 #array = np.arange(min_nr, max_nr+1)
-order = np.arange(0, 3)
+#order = np.arange(0, 3)
 
 labels_file = open("kitti_image_labels.txt", 'w')
 keys_file = open("kitti_image_keys.txt", 'w')
