@@ -1,7 +1,7 @@
 layer {
   name: "conv1"
   type: "Convolution"
-  bottom: "data"
+  bottom: "TEST"
   top: "conv1"
   convolution_param {
     num_output: 96

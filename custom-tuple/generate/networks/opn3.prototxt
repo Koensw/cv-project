@@ -1,7 +1,7 @@
 layer {
   name: "fc6_split0"
   type: "Slice"
-  bottom: "fc6_tp"
+#  bottom: "fc6_tp"
   top: "fc6_split0"
   top: "fc6_split1"
   top: "fc6_split2"

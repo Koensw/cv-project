@@ -1,7 +1,7 @@
 layer {
   name: "conv1"
   type: "Convolution"
-  bottom: "im_concat"
+  bottom: "TEST"
   top: "conv1"
   param {
     name: "CONV1_w"
@@ -410,10 +410,10 @@ layer {
   }
 }
 layer {
-  name: "fc6_tp"
+  name: "fc6"
   type: "InnerProduct"
   bottom: "pool5"
-  top: "fc6_tp"
+  top: "fc6"
   param {
     name: "FC6_w"
     lr_mult: 1
@@ -439,8 +439,8 @@ layer {
 layer {
   name: "bn6"
   type: "BatchNorm"
-  bottom: "fc6_tp"
-  top: "fc6_tp"
+  bottom: "fc6"
+  top: "fc6"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -463,8 +463,8 @@ layer {
 layer {
   name: "bn6"
   type: "BatchNorm"
-  bottom: "fc6_tp"
-  top: "fc6_tp"
+  bottom: "fc6"
+  top: "fc6"
   param {
     lr_mult: 0
     decay_mult: 0
@@ -487,8 +487,8 @@ layer {
 layer {
   name: "scale6"
   type: "Scale"
-  bottom: "fc6_tp"
-  top: "fc6_tp"
+  bottom: "fc6"
+  top: "fc6"
   scale_param {
     bias_term: true
   }
@@ -496,14 +496,14 @@ layer {
 layer {
   name: "relu6"
   type: "ReLU"
-  bottom: "fc6_tp"
-  top: "fc6_tp"
+  bottom: "fc6"
+  top: "fc6"
 }
 layer {
   name: "drop6"
   type: "Dropout"
-  bottom: "fc6_tp"
-  top: "fc6_tp"
+  bottom: "fc6"
+  top: "fc6"
   dropout_param {
     dropout_ratio: 0.5
   }

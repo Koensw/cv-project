@@ -24,6 +24,8 @@ class InputImageTuple(caffe.Layer):
         layer_params = yaml.load(self.param_str)
         self._data_shape = tuple(layer_params['data_shape']) #(1, 227, 227)
         self._base_dir = layer_params['base_dir']
+        if not isinstance(self._base_dir, list):
+            self._base_dir = [self._base_dir]
         self._keys_file = layer_params['keys_file']
         self._label_file = layer_params['label_file']
         self._batch_size = layer_params['batch_size']
@@ -32,7 +34,8 @@ class InputImageTuple(caffe.Layer):
         self._key_index = 0
         self._data_keys = np.genfromtxt(self._keys_file, "U")
         self._data_labels = np.genfromtxt(self._label_file, 'i')
-        self._num_images = len(top) - 1
+        assert ((len(top) - 1) % len(self._base_dir)) == 0
+        self._num_images = (len(top) - 1) / len(self._base_dir)
         assert len(self._data_keys) == len(self._data_labels)
         for key in self._data_keys:
             assert self._num_images == len(key)
@@ -49,22 +52,26 @@ class InputImageTuple(caffe.Layer):
             self._saliency_dir = layer_params['saliency_dir']
             
         # Reshape image tops
-        for i in range(self._num_images):
-            top[i].reshape(*((self._batch_size,) + self._data_shape))
+        for j in range(len(self._base_dir)):
+            for i in range(self._num_images):
+                top[j*self._num_images + i].reshape(*((self._batch_size,) + self._data_shape))
             
         top[-1].reshape(self._batch_size)
         
         self._direct = False
         if 'direct' in layer_params:
            self._direct = layer_params['direct']
-                      
-        if not self._direct:
-            self._fetcher = KittiBlobFetcher(self._base_dir)
-        else:
-            self._fetcher = BlobFetcher(self._base_dir)
+        
+        self._fetcher = []
+        for bd in self._base_dir:
+            if not self._direct:
+                self._fetcher.append(KittiBlobFetcher(bd))
+            else:
+                self._fetcher.append(BlobFetcher(bd))
         
         # Start blobfetcher process and fetch first batch        
-        self._fetcher.start()
+        for fetcher in self._fetcher:
+            fetcher.start()
         self.prepare_next_minibatch()
 
     def prepare_next_minibatch(self):
@@ -75,23 +82,25 @@ class InputImageTuple(caffe.Layer):
                 
             batch_keys = self._data_keys[self._key_index]
             #should_flip_image = True if (self._lr_flip_aug and np.random.randint(2) == 1) else False;
-            for t in range(self._num_images):
-                im_name = batch_keys[t]
+            for di, dr in enumerate(self._base_dir): 
+                for t in range(self._num_images):
+                    im_name = batch_keys[t]
 
-                im_path = os.path.join(self._base_dir, 'extracted', im_name)
-                #im_datas[t][b,:] = self.load_image(im_path, shape=(self._batch_size,) + self._data_shape)
-                self._fetcher.req(im_path, shape=(self._batch_size,) + self._data_shape)
+                    #im_path = os.path.join(dr, 'extracted', im_name)
+                    #im_datas[t][b,:] = self.load_image(im_path, shape=(self._batch_size,) + self._data_shape)
+                    self._fetcher[di].req(im_name, shape=(self._batch_size,) + self._data_shape)
             
             self._next_labels[b] = self._data_labels[self._key_index]
             
             self._key_index += 1
             
     def get_next_minibatch(self): 
-        im_datas = np.zeros((self._num_images, self._batch_size) + self._data_shape, dtype=np.float32)
+        im_datas = np.zeros((len(self._base_dir)*self._num_images, self._batch_size) + self._data_shape, dtype=np.float32)
         labels = self._next_labels
         for b in range(self._batch_size):
-            for t in range(self._num_images):
-                im_datas[t][b,:] = self._fetcher.get()
+            for di, _ in enumerate(self._base_dir):
+                for t in range(self._num_images):
+                    im_datas[di*self._num_images + t][b,:] = self._fetcher[di].get()
             
             #labels[b] = self._data_labels[self._key_index]    
                         
@@ -107,13 +116,14 @@ class InputImageTuple(caffe.Layer):
         # get current batch
         im_datas, labels = self.get_next_minibatch()
         
-        for c in range(self._num_images):
+        for c in range(len(self._base_dir)*self._num_images):
             top[c].data[:] = im_datas[c].astype(np.float32, copy=False)
             
-        top[-1].data[:] = labels
+        top[-1].data[:] = labels 
                 
         # prepare next one
-        assert self._fetcher.valid()
+        for i in range(len(self._base_dir)):
+            assert self._fetcher[i].valid()
         self.prepare_next_minibatch()
         
         #print("reading took {} seconds".format(time.time() - start))

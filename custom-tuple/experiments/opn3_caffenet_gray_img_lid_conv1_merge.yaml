@@ -1,14 +1,14 @@
 ---
-name: 'test'
+name: 'opn3_caffe_gray_lid_conv1'
 
-data_dir: ['/home/kwolters/sp/data/vis_lid', '/home/kwolters/sp/data/vis_od']
+data_dir: ['/home/kwolters/sp/data/vis_od', '/home/kwolters/sp/data/vis_lid']
 output_dir: '/home/kwolters/sp/project/custom-tuple/snapshots/'
 batch_size: 16
 
 num_inputs: 6
 num_outputs: 2
 groups: [3, 3]
-max_pre_backbone: 3
+max_pre_backbone: 1
 
 train_keys: '/home/kwolters/sp/input/standard/train/odo_image_keys.txt'
 train_labels: '/home/kwolters/sp/input/standard/train/odo_image_labels.txt'
@@ -19,9 +19,9 @@ backbone: '/home/kwolters/sp/project/custom-tuple/generate/networks/caffenet_opn
 network: '/home/kwolters/sp/project/custom-tuple/generate/networks/opn3.prototxt'
 
 visualize: True
-vis_iter: 512
+vis_iter: 4096
 
 base_lr: 0.01
 weight_decay: 0.001
-step_value: [4000, 8000, 16000]
+step_value: [2000, 5000, 8000]
 iter_size: 8

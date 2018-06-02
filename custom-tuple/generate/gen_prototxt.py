@@ -68,30 +68,98 @@ include_param = caffe_pb2.NetStateRule()
 include_param.phase = caffe_pb2.TEST
 test_layer.include.extend([include_param])
 
+python_params['keys_file'] = config['test_keys']
+python_params['label_file'] = config['test_labels']
 test_layer.python_param.param_str = yaml.dump(python_params)
 
-concat_layer = net.layer.add()
-concat_layer.name = "im_concat"
-concat_layer.type = "Concat"
-concat_layer.top.append("data")
-for i in range(config['num_inputs']):
-    concat_layer.bottom.append("im{}".format(i+1))
-concat_layer.concat_param.axis = 0
+assert sum(config['groups']) == config['num_inputs']
+grp_idx = 0
+end_layers = []
+for k, grp_sz in enumerate(config['groups']):
+    concat_layer = net.layer.add()
+    concat_layer.name = "im{}_concat".format(k)
+    concat_layer.type = "Concat"
+    concat_layer.top.append("data{}".format(k))
+    for i in range(grp_idx, grp_idx + grp_sz):
+        concat_layer.bottom.append("im{}".format(i+1))
+    grp_idx += grp_sz
+    concat_layer.concat_param.axis = 0
 
-# Load backbone
-backbone_file = open(config['backbone'], "r")
-if not backbone_file:
-    raise Exception("Could not open backbone")
-text_format.Merge(str(backbone_file.read()), net)
-backbone_file.close()
-net.layer[3].bottom[0] = "data"
+    # Load backbone
+    beg_idx = len(net.layer)
+    backbone_file = open(config['backbone'], "r")
+    if not backbone_file:
+        raise Exception("Could not open backbone")
+    text_format.Merge(str(backbone_file.read()), net)
+    backbone_file.close()
+    end_idx = len(net.layer)
+    i = beg_idx
+    while i < end_idx:
+        if 'max_pre_backbone' in config and int(net.layer[i].name[-1]) > config['max_pre_backbone']: 
+            del net.layer[i]
+            end_idx = end_idx - 1
+            continue
+            
+        #print(net.layer[i].name)
+        net.layer[i].name = "grp{}_{}".format(0, net.layer[i].name)
+        for j in range(len(net.layer[i].bottom)):
+            net.layer[i].bottom[j] = "grp{}_{}".format(k, net.layer[i].bottom[j])
+        for j in range(len(net.layer[i].top)):
+            net.layer[i].top[j] = "grp{}_{}".format(k, net.layer[i].top[j])
+            
+        i = i+1
+
+    del net.layer[beg_idx].bottom[:]
+    net.layer[beg_idx].bottom.append("data{}".format(k))
+    end_layers.append(end_idx-1)
+    
+if 'max_pre_backbone' in config:
+    concat_layer = net.layer.add()
+    concat_layer.name = "prebone_concat"
+    concat_layer.type = "Concat"
+    concat_layer.top.append("preout")
+    for i in end_layers:
+        concat_layer.bottom.append(net.layer[i].top[0])
+    concat_layer.concat_param.axis = 1
+
+    # Load backbone
+    beg_idx = len(net.layer)
+    backbone_file = open(config['backbone'], "r")
+    if not backbone_file:
+        raise Exception("Could not open backbone")
+    text_format.Merge(str(backbone_file.read()), net)
+    backbone_file.close()
+    end_idx = len(net.layer)
+    i = beg_idx
+    while i < end_idx:
+        if int(net.layer[i].name[-1]) <= config['max_pre_backbone']: 
+            del net.layer[i]
+            end_idx = end_idx - 1
+            continue
+            
+        #print(net.layer[i].name)
+        net.layer[i].name = "grp{}_{}".format(0, net.layer[i].name)
+        for j in range(len(net.layer[i].bottom)):
+            net.layer[i].bottom[j] = "grp{}_{}".format(k, net.layer[i].bottom[j])
+        for j in range(len(net.layer[i].top)):
+            net.layer[i].top[j] = "grp{}_{}".format(k, net.layer[i].top[j])
+            
+        i = i+1
+
+    del net.layer[beg_idx].bottom[:]
+    net.layer[beg_idx].bottom.append("preout")
 
 # Load custom backend
+beg_idx = len(net.layer)
 network_file = open(config['network'], "r")
 if not network_file:
-    raise Exception("Could not open backbone")
+    raise Exception("Could not open network")
 text_format.Merge(str(network_file.read()), net)
 network_file.close()
+
+del net.layer[beg_idx].bottom[:]
+assert len(net.layer[beg_idx-1].top) == 1
+net.layer[beg_idx].bottom.append(net.layer[beg_idx-1].top[0])
 
 # Final output layer
 network_final_top = net.layer[-1].top[0]

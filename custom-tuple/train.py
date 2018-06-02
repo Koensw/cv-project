@@ -40,7 +40,7 @@ print("Preparing solver")
 solver_path = sys.argv[1]
 solver = caffe.SGDSolver(solver_path)
 
-max_iters = 20001
+max_iters = 10000 #20001
 snapshot_iter = 200
 log_iter = 10
 

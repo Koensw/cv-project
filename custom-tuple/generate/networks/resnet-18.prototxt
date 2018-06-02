@@ -1,0 +1,1049 @@
+name: "ResNet-18"
+layer {
+    bottom: "TEST"
+    top: "conv1"
+    name: "conv1"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 7
+        pad: 3
+        stride: 2
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "conv1"
+    top: "conv1"
+    name: "bn_conv1"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+}
+
+layer {
+    bottom: "conv1"
+    top: "conv1"
+    name: "scale_conv1"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "conv1"
+    top: "conv1"
+    name: "conv1_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "conv1"
+    top: "pool1"
+    name: "pool1"
+    type: "Pooling"
+    pooling_param {
+        kernel_size: 3
+        stride: 2
+        pool: MAX
+    }
+}
+
+layer {
+    bottom: "pool1"
+    top: "resa2_branch1"
+    name: "resa2_branch1"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 1
+        pad: 0
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa2_branch1"
+    top: "resa2_branch1"
+    name: "bna2_branch1"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa2_branch1"
+    top: "resa2_branch1"
+    name: "scalea2_branch1"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "pool1"
+    top: "resa2_brancha2"
+    name: "resa2_brancha2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa2_brancha2"
+    top: "resa2_brancha2"
+    name: "bna2_brancha2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa2_brancha2"
+    top: "resa2_brancha2"
+    name: "scalea2_brancha2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa2_brancha2"
+    top: "resa2_brancha2"
+    name: "resa2_brancha2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resa2_brancha2"
+    top: "resa2_branchb2"
+    name: "resa2_branchb2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa2_branchb2"
+    top: "resa2_branchb2"
+    name: "bna2_branchb2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa2_branchb2"
+    top: "resa2_branchb2"
+    name: "scalea2_branchb2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa2_branch1"
+    bottom: "resa2_branchb2"
+    top: "resa2"
+    name: "resa2"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "resa2"
+    top: "resa2"
+    name: "resa2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resa2"
+    top: "resb2_brancha2"
+    name: "resb2_brancha2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resb2_brancha2"
+    top: "resb2_brancha2"
+    name: "bnb2_brancha2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resb2_brancha2"
+    top: "resb2_brancha2"
+    name: "scaleb2_brancha2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resb2_brancha2"
+    top: "resb2_brancha2"
+    name: "resb2_brancha2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resb2_brancha2"
+    top: "resb2_branchb2"
+    name: "resb2_branchb2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 64
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resb2_branchb2"
+    top: "resb2_branchb2"
+    name: "bnb2_branchb2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resb2_branchb2"
+    top: "resb2_branchb2"
+    name: "scaleb2_branchb2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa2"
+    bottom: "resb2_branchb2"
+    top: "resb2"
+    name: "resb2"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "resb2"
+    top: "resb2"
+    name: "resb2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resb2"
+    top: "resa3_branch1"
+    name: "resa3_branch1"
+    type: "Convolution"
+    convolution_param {
+        num_output: 128
+        kernel_size: 1
+        pad: 0
+        stride: 2
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa3_branch1"
+    top: "resa3_branch1"
+    name: "bna3_branch1"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa3_branch1"
+    top: "resa3_branch1"
+    name: "scalea3_branch1"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resb2"
+    top: "resa3_brancha2"
+    name: "resa3_brancha2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 128
+        kernel_size: 3
+        pad: 1
+        stride: 2
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa3_brancha2"
+    top: "resa3_brancha2"
+    name: "bna3_brancha2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa3_brancha2"
+    top: "resa3_brancha2"
+    name: "scalea3_brancha2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa3_brancha2"
+    top: "resa3_brancha2"
+    name: "resa3_brancha2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resa3_brancha2"
+    top: "resa3_branchb2"
+    name: "resa3_branchb2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 128
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa3_branchb2"
+    top: "resa3_branchb2"
+    name: "bna3_branchb2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa3_branchb2"
+    top: "resa3_branchb2"
+    name: "scalea3_branchb2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa3_branch1"
+    bottom: "resa3_branchb2"
+    top: "resa3"
+    name: "resa3"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "resa3"
+    top: "resa3"
+    name: "resa3_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resa3"
+    top: "resb3_brancha2"
+    name: "resb3_brancha2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 128
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resb3_brancha2"
+    top: "resb3_brancha2"
+    name: "bnb3_brancha2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resb3_brancha2"
+    top: "resb3_brancha2"
+    name: "scaleb3_brancha2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resb3_brancha2"
+    top: "resb3_brancha2"
+    name: "resb3_brancha2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resb3_brancha2"
+    top: "resb3_branchb2"
+    name: "resb3_branchb2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 128
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resb3_branchb2"
+    top: "resb3_branchb2"
+    name: "bnb3_branchb2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resb3_branchb2"
+    top: "resb3_branchb2"
+    name: "scaleb3_branchb2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa3"
+    bottom: "resb3_branchb2"
+    top: "resb3"
+    name: "resb3"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "resb3"
+    top: "resb3"
+    name: "resb3_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resb3"
+    top: "resa4_branch1"
+    name: "resa4_branch1"
+    type: "Convolution"
+    convolution_param {
+        num_output: 256
+        kernel_size: 1
+        pad: 0
+        stride: 2
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa4_branch1"
+    top: "resa4_branch1"
+    name: "bna4_branch1"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa4_branch1"
+    top: "resa4_branch1"
+    name: "scalea4_branch1"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resb3"
+    top: "resa4_brancha2"
+    name: "resa4_brancha2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 256
+        kernel_size: 3
+        pad: 1
+        stride: 2
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa4_brancha2"
+    top: "resa4_brancha2"
+    name: "bna4_brancha2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa4_brancha2"
+    top: "resa4_brancha2"
+    name: "scalea4_brancha2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa4_brancha2"
+    top: "resa4_brancha2"
+    name: "resa4_brancha2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resa4_brancha2"
+    top: "resa4_branchb2"
+    name: "resa4_branchb2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 256
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa4_branchb2"
+    top: "resa4_branchb2"
+    name: "bna4_branchb2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa4_branchb2"
+    top: "resa4_branchb2"
+    name: "scalea4_branchb2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa4_branch1"
+    bottom: "resa4_branchb2"
+    top: "resa4"
+    name: "resa4"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "resa4"
+    top: "resa4"
+    name: "resa4_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resa4"
+    top: "resb4_brancha2"
+    name: "resb4_brancha2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 256
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resb4_brancha2"
+    top: "resb4_brancha2"
+    name: "bnb4_brancha2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resb4_brancha2"
+    top: "resb4_brancha2"
+    name: "scaleb4_brancha2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resb4_brancha2"
+    top: "resb4_brancha2"
+    name: "resb4_brancha2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resb4_brancha2"
+    top: "resb4_branchb2"
+    name: "resb4_branchb2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 256
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resb4_branchb2"
+    top: "resb4_branchb2"
+    name: "bnb4_branchb2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resb4_branchb2"
+    top: "resb4_branchb2"
+    name: "scaleb4_branchb2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa4"
+    bottom: "resb4_branchb2"
+    top: "resb4"
+    name: "resb4"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "resb4"
+    top: "resb4"
+    name: "resb4_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resb4"
+    top: "resa5_branch1"
+    name: "resa5_branch1"
+    type: "Convolution"
+    convolution_param {
+        num_output: 512
+        kernel_size: 1
+        pad: 0
+        stride: 2
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa5_branch1"
+    top: "resa5_branch1"
+    name: "bna5_branch1"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa5_branch1"
+    top: "resa5_branch1"
+    name: "scalea5_branch1"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resb4"
+    top: "resa5_brancha2"
+    name: "resa5_brancha2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 512
+        kernel_size: 3
+        pad: 1
+        stride: 2
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa5_brancha2"
+    top: "resa5_brancha2"
+    name: "bna5_brancha2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa5_brancha2"
+    top: "resa5_brancha2"
+    name: "scalea5_brancha2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa5_brancha2"
+    top: "resa5_brancha2"
+    name: "resa5_brancha2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resa5_brancha2"
+    top: "resa5_branchb2"
+    name: "resa5_branchb2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 512
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resa5_branchb2"
+    top: "resa5_branchb2"
+    name: "bna5_branchb2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resa5_branchb2"
+    top: "resa5_branchb2"
+    name: "scalea5_branchb2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa5_branch1"
+    bottom: "resa5_branchb2"
+    top: "resa5"
+    name: "resa5"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "resa5"
+    top: "resa5"
+    name: "resa5_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resa5"
+    top: "resb5_brancha2"
+    name: "resb5_brancha2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 512
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resb5_brancha2"
+    top: "resb5_brancha2"
+    name: "bnb5_brancha2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resb5_brancha2"
+    top: "resb5_brancha2"
+    name: "scaleb5_brancha2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resb5_brancha2"
+    top: "resb5_brancha2"
+    name: "resb5_brancha2_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resb5_brancha2"
+    top: "resb5_branchb2"
+    name: "resb5_branchb2"
+    type: "Convolution"
+    convolution_param {
+        num_output: 512
+        kernel_size: 3
+        pad: 1
+        stride: 1
+        weight_filler {
+            type: "msra"
+        }
+        bias_term: false
+
+    }
+}
+
+layer {
+    bottom: "resb5_branchb2"
+    top: "resb5_branchb2"
+    name: "bnb5_branchb2"
+    type: "BatchNorm"
+    batch_norm_param {
+      moving_average_fraction: 0.9 
+    }
+    
+}
+
+layer {
+    bottom: "resb5_branchb2"
+    top: "resb5_branchb2"
+    name: "scaleb5_branchb2"
+    type: "Scale"
+    scale_param {
+        bias_term: true
+    }
+}
+
+layer {
+    bottom: "resa5"
+    bottom: "resb5_branchb2"
+    top: "resb5"
+    name: "resb5"
+    type: "Eltwise"
+    eltwise_param {
+        operation: SUM
+    }
+}
+
+layer {
+    bottom: "resb5"
+    top: "resb5"
+    name: "resb5_relu"
+    type: "ReLU"
+}
+
+layer {
+    bottom: "resb5"
+    top: "pool5"
+    name: "pool5"
+    type: "Pooling"
+    pooling_param {
+        kernel_size: 7
+        stride: 1
+        pool: AVE
+    }
+}
