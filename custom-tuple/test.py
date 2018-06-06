@@ -9,7 +9,7 @@ print("Loading libraries")
 import matplotlib
 #matplotlib.use("Agg")
 
-ROUNDS = 1 #5000//8
+ROUNDS = 1 # 10000 // 16
 
 import numpy as np
 import os
@@ -42,17 +42,31 @@ else:
 print("Building net")
 
 net = caffe.Net(sys.argv[1], 1, weights=sys.argv[2])
-net.forward()
+#net.forward()
 
 print("Calculating score...")
 np.set_printoptions(precision=2)
 
 total = 0
 cnt = 0
+first_image = None
 for i in range(ROUNDS):
-    #if i != 0 and (i % 100) == 0: break
-    #print(i)
+    if (cnt % 50) == 0: print(cnt)
     forward_data = net.forward()
+    #if first_image is None: first_image = np.copy(net.blobs['im1'].data[0])
+    #else:
+        #stop = False
+        #for img in net.blobs['im1'].data:
+            #if np.all(img == first_image): 
+                #stop = True
+                #break
+        
+        #if stop:
+            #print('STOP:', cnt)
+            #break
+            
+        #print(first_image == net.blobs['im1'].data[:])
+    
     #print(net.blobs['label'].data, np.argmax(net.blobs['prob'].data[:,:], axis = 1))
     expout = np.vstack((net.blobs['label'].data, np.argmax(net.blobs['prob'].data[:,:], axis = 1), np.max(net.blobs['prob'].data[:,:], axis = 1))).transpose()
     #print(expout)
@@ -68,28 +82,41 @@ maxeo = (expout > 0.5)
 print('Accuracy', total / cnt)
 
 print("Visualizing...")
+net.force_backward = True
 net.backward() # saliency maps
 
-visualize_weights(net, 'conv1', color = False, layer = 0, padding = 1, filename = "/home/kwolters/temp/conv1_weights.png")
+vis_dir = os.path.join(os.path.dirname(sys.argv[1]), '../vis')
+grp = 0
+while True:
+    print(grp)
+    if 'grp{}_conv1'.format(grp) not in net.blobs:
+        break
+    
+    visualize_weights(net, 'grp{}_conv1'.format(grp), color = False, layer = 0, padding = 1, filename = os.path.join(vis_dir, "grp{}_conv1_weights.png".format(grp)))
 
-#visualize_saliency(net, 'im_concat', 24, 0, 0)
-#visualize_weights(net, 'conv1', color = False, layer = 1, padding = 1)
-#visualize_weights(net, 'conv1', color = False, layer = 2, padding = 1)
-visualize_weights(net, 'conv2', padding = 1, filename = "/home/kwolters/temp/conv2_weights.png")
-visualize_activated_regions(net, 'conv1', 'im_concat', padding = 1, groups = 16, filename = "/home/kwolters/temp/conv1_activated_regions.png")
-visualize_activated_regions(net, 'conv5', 'im_concat', padding = 1, groups = 16, filename = "/home/kwolters/temp/conv5_activated_regions.png")
+    #visualize_saliency(net, 'im_concat', 24, 0, 0)
+    #visualize_weights(net, 'conv1', color = False, layer = 1, padding = 1)
+    #visualize_weights(net, 'conv1', color = False, layer = 2, padding = 1)
+    visualize_weights(net, 'grp{}_conv2'.format(grp), padding = 1, filename = os.path.join(vis_dir, "grp{}_conv2_weights.png".format(grp)))
+    visualize_activated_regions(net, 'grp{}_conv1'.format(grp), 'data{}'.format(grp), padding = 1, groups = 16, filename = os.path.join(vis_dir, "grp{}_conv1_activated_regions.png".format(grp)))
+    if 'grp{}_conv5'.format(grp) in net.blobs:
+        visualize_activated_regions(net, 'grp{}_conv5'.format(grp), 'data{}'.format(grp), padding = 1, groups = 16, filename = os.path.join(vis_dir, "grp{}_conv5_activated_regions.png".format(grp)))        
 
-for i in range(3):
-    image = net.blobs['im_concat'].data[16*i]
-    #print(image.shape)
+    for i in range(len(net.blobs['data{}'.format(grp)].data) // len(net.blobs['im1'].data)):
+        image = net.blobs['data{}'.format(grp)].data[len(net.blobs['im1'].data) * i]
+        #print(image.shape)
 
-    plt.figure(figsize=(10, 10))
-    plt.axis('off')
-    plt.imshow(image[0,:, :], cmap='gray', interpolation='nearest')
-    plt.savefig("/home/kwolters/temp/image{}.png".format(i+1), bbox_inches='tight', pad_inches=0)
-    #plt.imsave(image[0,:,:], "/home/kwolters/temp/image1.png");
-    visualize_activations(net, 'conv1', 'im_concat', 16*i, padding = 1, filename = "/home/kwolters/temp/conv1_activations_image{}.png".format(i+1))
-    visualize_activations(net, 'conv5', 'im_concat', 16*i, padding = 1, filename = "/home/kwolters/temp/conv5_activations_image{}.png".format(i+1))
+        plt.figure(figsize=(10, 10))
+        plt.axis('off')
+        plt.imshow(image[0,:, :], cmap='gray', interpolation='nearest')
+        plt.savefig(os.path.join(vis_dir, "grp{}_image{}.png".format(grp, i+1)), bbox_inches='tight', pad_inches=0)
+        plt.close()
+        #plt.imsave(image[0,:,:], "/home/kwolters/temp/image1.png");
+        visualize_activations(net, 'grp{}_conv1'.format(grp), 'data{}'.format(grp), len(net.blobs['im1'].data) * i, padding = 1, filename = os.path.join(vis_dir, "grp{}_conv1_activations_image{}.png".format(grp, i+1)))
+        if 'grp{}_conv5'.format(grp) in net.blobs:
+            visualize_activations(net, 'grp{}_conv5'.format(grp), 'data{}'.format(grp), len(net.blobs['im1'].data) * i, padding = 1, filename = os.path.join(vis_dir, "grp{}_conv5_activations_image{}.png".format(grp, i+1)))
+    
+    grp = grp+1
 
 #expout = np.vstack((net.blobs['label'].data, net.blobs['prob'].data[:,1])).transpose()
 

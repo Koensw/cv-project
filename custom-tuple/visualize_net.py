@@ -66,6 +66,7 @@ def visualize_weights(net, layer_name, padding=4, color=False, layer=-1, filenam
         plt.savefig(filename, bbox_inches='tight', pad_inches=0)
     else:
         plt.show()
+    plt.close()
     
 def visualize_activations(net, layer_name, image_layer_name, image_idx, padding=4, box_size=20, filename='', groups = 1):    
     # The parameters are a list of [weights, biases]
@@ -113,6 +114,7 @@ def visualize_activations(net, layer_name, image_layer_name, image_idx, padding=
         plt.savefig(filename, bbox_inches='tight', pad_inches=0)
     else:
         plt.show()
+    plt.close()
 
 def visualize_activated_regions(net, layer_name, image_layer_name, padding=4, box_size=20, amount=5, filename='', groups = 1):    
     # The parameters are a list of [weights, biases]
@@ -181,6 +183,7 @@ def visualize_activated_regions(net, layer_name, image_layer_name, padding=4, bo
         plt.savefig(filename, bbox_inches='tight', pad_inches=0)
     else:
         plt.show()
+    plt.close()
     
 ## FIXME: updates network?
 #def visualize_saliency(net, image_layer_name, num_outputs, image_idx, label_idx, filename=''):    

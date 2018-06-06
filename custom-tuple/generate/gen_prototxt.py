@@ -49,7 +49,7 @@ python_params = {'keys_file': config['train_keys'],
                  'base_dir': config['data_dir'],
                  'direct': True,
                  'shuffle': True,
-                 'saliency_dir': os.path.join(output_dir, 'saliency'),
+                 'saliency_dir': os.path.join(output_dir, 'vis'),
                  'data_shape': [1, 227, 227],
                  'batch_size': config['batch_size']
                  }
@@ -101,7 +101,7 @@ for k, grp_sz in enumerate(config['groups']):
             continue
             
         #print(net.layer[i].name)
-        net.layer[i].name = "grp{}_{}".format(0, net.layer[i].name)
+        net.layer[i].name = "grp{}_{}".format(k, net.layer[i].name)
         for j in range(len(net.layer[i].bottom)):
             net.layer[i].bottom[j] = "grp{}_{}".format(k, net.layer[i].bottom[j])
         for j in range(len(net.layer[i].top)):
@@ -138,11 +138,11 @@ if 'max_pre_backbone' in config:
             continue
             
         #print(net.layer[i].name)
-        net.layer[i].name = "grp{}_{}".format(0, net.layer[i].name)
-        for j in range(len(net.layer[i].bottom)):
-            net.layer[i].bottom[j] = "grp{}_{}".format(k, net.layer[i].bottom[j])
-        for j in range(len(net.layer[i].top)):
-            net.layer[i].top[j] = "grp{}_{}".format(k, net.layer[i].top[j])
+        #net.layer[i].name = "grp{}_{}".format(0, net.layer[i].name)
+        #for j in range(len(net.layer[i].bottom)):
+            #net.layer[i].bottom[j] = "grp{}_{}".format(k, net.layer[i].bottom[j])
+        #for j in range(len(net.layer[i].top)):
+            #net.layer[i].top[j] = "grp{}_{}".format(k, net.layer[i].top[j])
             
         i = i+1
 
