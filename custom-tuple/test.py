@@ -9,7 +9,7 @@ print("Loading libraries")
 import matplotlib
 #matplotlib.use("Agg")
 
-ROUNDS = 1 # 10000 // 16
+ROUNDS = 10000 // 16
 
 import numpy as np
 import os
