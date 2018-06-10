@@ -7,8 +7,47 @@
 \newpage
 \chapter{Experiments and Results}
 \label{ch:experimentsandresults}
-Describe the evaluation you did in a way, such that an independent researcher can repeat it. Cover the following questions:
-\begin{itemize}
- \item \textit{What is the experimental setup and methodology?} Describe the setting of the experiments and give all the parameters in detail which you have used. Give a detailed account of how the experiment was conducted.
- \item \textit{What are your results?} In this section, a \emph{clear description} of the results is given. If you produced lots of data, include only representative data here and put all results into the appendix. 
-\end{itemize}
+In this chapter several experiments are given for different network design possibilities and accuracy results are presented on test data. In the context of deep learning a study of those variations with different complexity is often referred as an ablation analysis. The required network for the ordering task analyzed in this thesis is split up in a backbone network and a processing network to generate the eventual output. 
+
+For all experiments an stochastic gradient descent method with a momentum of 0.9 was used together with L2 regularization with a weight decay of 0.001. The base learning rate has been set to 0.01 with a multistep policy to decrease the learning rate by a factor 10 on the 2000, 5000 and 8000 epoch. Training was done for a total of 10000 epochs with a batch size of 16, longer iterations have not shown any significant improvements. It is stressed that finding the precise optimal value of these parameters is not the focus and of this work and therefore not done separately for all the network variations, but the values have been manually tuned for good general behavior in training. 
+
+A simpler version of the proposed OPN network~\cite{lee2017} has been implemented first, referred with OPN3 from now on. Here the studied permutation task was reduced again to the binary ordering task and also the number of input images has been set to 3, to basically have a simple 3-way tuple task as suggested by ~\cite{misra2016} however employing the pairwise feature extraction layers and better initialization parameters for the underlying Caffenet~\cite{jia2014}. It was also tried to run the basic network from~\cite{misra2016} without those improvements, but convergence has been poor. 
+
+This OPN3 network was used with a Caffenet backbone on both the grayscale images generated with the channel splitting, [color images] and unprocessed lidar data (from the direct projection). The results are shown in the upper part of Table \ref{tab:results}. It is immediately clear that the networks performs remarkably well on the binary classification task, with percentages above 75\% on all variations. This is significantly higher than the 50\% which would result from random choice and seems relatively high given the apparent complexity of the task for computers to learn. In this section we provide the basic results of the various implemented approaches, and more in-depth analysis of the features the network learns follows in Chapter \ref{ch:discussion}.
+
+The version on the grayscale images works better than the unprocessed lidar which could be anticipated because the image generally provides a richer representation of the world with more attention to details. It should however be expected that the lidar provides additional information to enrich the representation learned from grayscale alone. To study this in more detail several networks have been implemented containing separate backbones for both the lidar and image data for the initial layers. These backbones combine at different depths of the network to a single backbone. This concatenation of neurons is always applied after the possible pooling, batch norm and ReLU steps at a certain depth, precisely before the next convolutional layer.
+It is clear from Table \ref{tab:results} that merging after the first convolutional layer gives indeed an improvement, but the difference is relatively marginal with 0.4\%. Merging further in the chain is more expensive as the number of parameters to learn increases significantly. It is however surprising to note that merging after the fourth convolutional layer does not lead to convergence at all.
+
+\begin{table}[]
+\centering
+\caption{Accuracy results on the trained networks}
+\label{tab:results}
+\begin{tabular}{|p{5cm}|p{2cm}|p{2cm}|p{2cm}|}
+\hline
+\textbf{Input}                                                          & \textbf{Backbone network} & \textbf{Output network} & \textit{\textbf{Accuracy}} \\ \hline
+grayscale                                                               & Caffenet                  & OPN3                    & 82.25 \%                   \\ \hline
+unprocessed lidar                                                       & Caffenet                  & OPN3                    & 75.93 \%                   \\ \hline
+grayscale and unprocessed lidar merged after first convolution          & Caffenet                  & OPN3                    & 82.84 \%                   \\ \hline
+grayscale and unprocessed lidar merged after fourth convolutional layer & Caffenet                  & OPN3                    & \textit{49.25} \%          \\ \hline
+grayscale with training on non-fixed time differences                   & Caffenet                  & OPN3                    & 79.72 \%                   \\ \hline
+grayscale                                                               & Resnet-18                 & OPN3                    & \textit{53.12} \%          \\ \hline
+grayscale                                                               & Caffenet                  & OPN4                    & 38.63 \%                   \\ \hline
+grayscale and unprocessed lidar merged after first convolution          & Caffenet                  & OPN4                    & 44.42 \%                   \\ \hline
+\end{tabular}
+\end{table}
+
+As earlier works~\cite{misra2016,lee2017} have used the Caffenet backbone, the original networks here are focused on those as well. However several other networks have shown superior performance on object detection on the Imagenet dataset, notably the Resnet architecture\cite{he2016}. The Resnet architecture has versions with various depths with increasing strength on particular task if properly trained. However because the binary ordering task has simple output and to shorten the learning time it could be argued that Resnet-18 should be solid choice to start. However as shown in Table \ref{tab:results} this approach performs surprisingly poor, with an accuracy that is only very slightly above random.
+
+In general all the networks that converge exhibit significant over-fitting, with accuracies reaching close to 100\% on the training data with the L2 regularization employed. As accuracy percentages are also high on the test task it is clear that the task is relatively easy for the neural network to learn, as was noticed earlier by Fernando et al.~\cite{fernando2017}. Therefore all succesful experiments on the OPN3 have also been carried out on the full OPN network\cite{lee2017}, with 4 images as input and permutation labeling. In contrast to the OPN4 network which does not distinguish between forward and backward orderings of the same permutation, in this work the network are trained with all permutation labels differently as in driving the difference between going forward (as would happen in reality) and going backward should generally be detectable. 
+
+Again Table \ref{tab:results} shows strong performance of the network. With a fully random network gaining an accuracy of around 4\%, the version only grayscale already shows significant improvement with over 38\%. It is also interesting to note that the combination of grayscale and lidar shows much stronger performance, with a difference of around 6\%, considerably higher than the equal improvement in the OPN3 network.
+
+Another variant of making the task more difficult is to change the time delay from the fixed 5 frames, to a sampled one from 4 until 10 frames, to investigate the dependence of the network on constant movement during training - under the assumption of relatively fixed speed during driving. The eventual network is evaluated on the same test set as all other OPN3 candidates. It is clear that the learning is indeed slightly based on constant offsets, but the impact of this effect is rather minimal.
+
+%In an initial experiment, we implement the tuple network from\cite{misra2016}. [However it did not converge].
+
+%Describe the evaluation you did in a way, such that an independent researcher can repeat it. Cover the following questions:
+% \begin{itemize}
+%  \item \textit{What is the experimental setup and methodology?} Describe the setting of the experiments and give all the parameters in detail which you have used. Give a detailed account of how the experiment was conducted.
+%  \item \textit{What are your results?} In this section, a \emph{clear description} of the results is given. If you produced lots of data, include only representative data here and put all results into the appendix. 
+% \end{itemize}
