@@ -44,13 +44,18 @@ include_param = caffe_pb2.NetStateRule()
 include_param.phase = caffe_pb2.TRAIN
 train_layer.include.extend([include_param])
 
+channels = 1
+if config['color']:
+    channels = 3
+
 python_params = {'keys_file': config['train_keys'],
                  'label_file': config['train_labels'],
                  'base_dir': config['data_dir'],
+                 'channel_split': config['channel_split'],
                  'direct': True,
                  'shuffle': True,
                  'saliency_dir': os.path.join(output_dir, 'vis'),
-                 'data_shape': [1, 227, 227],
+                 'data_shape': [channels, 227, 227],
                  'batch_size': config['batch_size']
                  }
 train_layer.python_param.param_str = yaml.dump(python_params)
@@ -204,7 +209,7 @@ if config['visualize']:
     vis_layer.type = "Python"
     vis_layer.python_param.module = "visualize"
     vis_layer.python_param.layer = "Visualize"
-    vis_params = {'types': ['img'] * config['num_inputs'] + ['txt', 'txt'], 'plot_iter': config['vis_iter'], 'save_path': os.path.join(output_dir, 'vis'), 'gray': True}
+    vis_params = {'types': ['img'] * config['num_inputs'] + ['txt', 'txt'], 'plot_iter': config['vis_iter'], 'save_path': os.path.join(output_dir, 'vis')} # 'gray': True
     vis_layer.python_param.param_str = yaml.dump(vis_params)
     for i in range(config['num_inputs']):
         vis_layer.bottom.append("im{}".format(i+1))

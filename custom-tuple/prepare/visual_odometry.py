@@ -19,13 +19,13 @@ import re
 
 base_dir = "/srv/glusterfs/patilv/Datasets/kitti/visual_odometry/dataset/sequences"
 local_file_dir = "image_2/" #"velodyne_proj_2/"
-store_dir = "/home/kwolters/sp/data/vis_od/" # "/home/kwolters/sp/data/vis_lid/"
+store_dir = "/home/kwolters/sp/data/vis_od_color/" # "/home/kwolters/sp/data/vis_lid/"
 
 dirs = sorted(glob.glob(os.path.join(base_dir, "*")))
 dir_size = []
 fetchers = []
 
-fetcher = BlobFetcher(base_dir, transform = True, channel_split = True, jitter = False)
+fetcher = BlobFetcher(base_dir, transform = True, channel_split = False, jitter = False)
 fetcher.start()
 for d in dirs:
     local_dir = os.path.join(d, local_file_dir)
@@ -72,12 +72,13 @@ for i, ds in enumerate(dir_size):
             im = im[:, :, 0]
        
         #print(im[0].shape)
-        #plt.imshow(im[:, :, 0], cmap="gray")
+        #plt.imshow(im)
         #plt.show()
+        #sys.exit(0)
         
         im_path = os.path.join(store_dir, loc)
         #print(im_path, im.shape)
-        plt.imsave(im_path, im, cmap = 'gray')
+        plt.imsave(im_path, im)
         #sys.exit(0)
         #plt.imshow(im[:, :, 1], cmap="gray")
         #plt.show()

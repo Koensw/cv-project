@@ -63,13 +63,18 @@ class BlobFetcher(Process):
             loc = os.path.join(self._basedir, folder, os.path.basename(imname))
         
         imrd = Image.open(loc)
-        if shape[1] == 1: imrd = imrd.convert('L')
-        
+        if shape[1] == 1 and not self._channel_split:
+            imrd = imrd.convert('L')
+            
         im = np.array(imrd).astype(np.float32) / 255.0
         if len(im.shape) == 2: 
             im = im[:, :, None]
         if im.shape[2] > 3:
             im = im[:, :, :3] # skip optional 4th dimension
+            
+        if self._channel_split:
+            im = self.channel_split(im)
+            
         #print(im.shape, shape)
         if not self._transform:
             if not (im.shape[0] == shape[2] and im.shape[1] == shape[3] and im.shape[2] == shape[1]):
@@ -94,8 +99,6 @@ class BlobFetcher(Process):
         
         if self._jitter:
             im = self.jitter_image(im)
-        if self._channel_split:
-            im = self.channel_split(im)
             
         im = np.transpose(im, axes = (2, 0, 1))
         

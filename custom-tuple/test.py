@@ -9,7 +9,7 @@ print("Loading libraries")
 import matplotlib
 #matplotlib.use("Agg")
 
-ROUNDS = 1 # 10000 // 16
+ROUNDS = 10000 // 16
 
 import numpy as np
 import os
@@ -97,7 +97,9 @@ while True:
     #visualize_saliency(net, 'im_concat', 24, 0, 0)
     #visualize_weights(net, 'conv1', color = False, layer = 1, padding = 1)
     #visualize_weights(net, 'conv1', color = False, layer = 2, padding = 1)
-    visualize_weights(net, 'grp{}_conv2'.format(grp), padding = 1, filename = os.path.join(vis_dir, "grp{}_conv2_weights.png".format(grp)))
+    if 'grp{}_conv2'.format(grp) in net.blobs:
+        visualize_weights(net, 'grp{}_conv2'.format(grp), padding = 1, filename = os.path.join(vis_dir, "grp{}_conv2_weights.png".format(grp)))
+        
     visualize_activated_regions(net, 'grp{}_conv1'.format(grp), 'data{}'.format(grp), padding = 1, groups = 16, filename = os.path.join(vis_dir, "grp{}_conv1_activated_regions.png".format(grp)))
     if 'grp{}_conv5'.format(grp) in net.blobs:
         visualize_activated_regions(net, 'grp{}_conv5'.format(grp), 'data{}'.format(grp), padding = 1, groups = 16, filename = os.path.join(vis_dir, "grp{}_conv5_activated_regions.png".format(grp)))        
@@ -117,6 +119,18 @@ while True:
             visualize_activations(net, 'grp{}_conv5'.format(grp), 'data{}'.format(grp), len(net.blobs['im1'].data) * i, padding = 1, filename = os.path.join(vis_dir, "grp{}_conv5_activations_image{}.png".format(grp, i+1)))
     
     grp = grp+1
+    
+if 'conv2' in net.blobs:
+    visualize_weights(net, 'conv2', padding = 1, filename = os.path.join(vis_dir, "conv2_weights.png"))
+    
+if 'conv5' in net.blobs:
+    visualize_activated_regions(net, 'conv5', 'data0', padding = 1, groups = 16, filename = os.path.join(vis_dir, "conv5_activated_regions.png")) 
+    
+for i in range(len(net.blobs['data0'].data) // len(net.blobs['im1'].data)):
+    #plt.imsave(image[0,:,:], "/home/kwolters/temp/image1.png");
+    #visualize_activations(net, 'grp{}_conv1'.format(grp), 'data{}'.format(grp), len(net.blobs['im1'].data) * i, padding = 1, filename = os.path.join(vis_dir, "grp{}_conv1_activations_image{}.png".format(grp, i+1)))
+    if 'conv5' in net.blobs:
+        visualize_activations(net, 'conv5', 'data0', len(net.blobs['im1'].data) * i, padding = 1, filename = os.path.join(vis_dir, "conv5_activations_image{}.png"))
 
 #expout = np.vstack((net.blobs['label'].data, net.blobs['prob'].data[:,1])).transpose()
 

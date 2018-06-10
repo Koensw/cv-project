@@ -30,7 +30,7 @@ class Visualize(caffe.Layer):
             
         self._gray = False
         if "gray" in layer_params:
-            self._gray = True
+            self._gray = layer_params['gray']
         
         assert len(self._types) == len(bottom)
         self._batch_size = bottom[0].shape[0]

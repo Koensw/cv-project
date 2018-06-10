@@ -17,6 +17,9 @@ test_labels: '/home/kwolters/sp/input/opn/test/odo_image_labels.txt'
 backbone: '/home/kwolters/sp/project/custom-tuple/generate/networks/caffenet_opn.prototxt'
 network: '/home/kwolters/sp/project/custom-tuple/generate/networks/opn.prototxt'
 
+color: false
+channel_split: false
+
 visualize: True
 vis_iter: 4096
 

@@ -62,12 +62,16 @@ class InputImageTuple(caffe.Layer):
         if 'direct' in layer_params:
            self._direct = layer_params['direct']
         
+        self._channel_split = False
+        if 'channel_split' in layer_params:
+            self._channel_split = layer_params['channel_split']
+        
         self._fetcher = []
         for bd in self._base_dir:
             if not self._direct:
                 self._fetcher.append(KittiBlobFetcher(bd))
             else:
-                self._fetcher.append(BlobFetcher(bd))
+                self._fetcher.append(BlobFetcher(bd, channel_split = self._channel_split))
         
         # Start blobfetcher process and fetch first batch        
         for fetcher in self._fetcher:
