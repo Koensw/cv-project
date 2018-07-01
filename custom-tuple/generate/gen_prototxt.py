@@ -75,6 +75,7 @@ test_layer.include.extend([include_param])
 
 python_params['keys_file'] = config['test_keys']
 python_params['label_file'] = config['test_labels']
+python_params['shuffle'] = False
 test_layer.python_param.param_str = yaml.dump(python_params)
 
 assert sum(config['groups']) == config['num_inputs']

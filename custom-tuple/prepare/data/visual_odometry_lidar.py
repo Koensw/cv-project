@@ -18,8 +18,8 @@ import glob
 import re
 
 base_dir = "/srv/glusterfs/patilv/Datasets/kitti/visual_odometry/dataset/sequences"
-local_file_dir = "velodyne_proj_2/"
-store_dir = "/home/kwolters/sp/data/vis_lid_pre/"
+local_file_dir = "velodyne_proj_reflectance_2/"
+store_dir = "/home/kwolters/sp/data/vis_lid_refl/"
 
 dirs = sorted(glob.glob(os.path.join(base_dir, "*")))
 dir_size = []
@@ -71,25 +71,25 @@ for i, ds in enumerate(dir_size):
         if im.shape[2] == 1:
             im = im[:, :, 0]
        
-        nim = np.zeros(im.shape)
-        temp = np.zeros(im.shape)
-        for idx, val in np.ndenumerate(im):
-            if val <= 1e-9: continue
+        #nim = np.zeros(im.shape)
+        #temp = np.zeros(im.shape)
+        #for idx, val in np.ndenumerate(im):
+            #if val <= 1e-9: continue
             
-            tot = 1e-3
-            temp[:, :] = 0
-            for i in range(max(0, idx[0] - 4), min(im.shape[0], idx[0] + 5)):
-                for j in range(max(0, idx[1] - 4), min(im.shape[1], idx[1] + 5)):
-                    rel = (1.0/(np.hypot(i - idx[0], j - idx[1]) + 0.1)) * (np.max(im) - val)
-                    tot = tot + rel
-                    temp[i, j] = rel * val
+            #tot = 1e-3
+            #temp[:, :] = 0
+            #for i in range(max(0, idx[0] - 4), min(im.shape[0], idx[0] + 5)):
+                #for j in range(max(0, idx[1] - 4), min(im.shape[1], idx[1] + 5)):
+                    #rel = (1.0/(np.hypot(i - idx[0], j - idx[1]) + 0.1)) * (np.max(im) - val)
+                    #tot = tot + rel
+                    #temp[i, j] = rel * val
                   
-            #print(tot)      
-            for i in range(max(0, idx[0] - 4), min(im.shape[0], idx[0] + 5)):
-                for j in range(max(0, idx[1] - 4), min(im.shape[1], idx[1] + 5)):
-                    temp[i, j] /= tot
+            ##print(tot)      
+            #for i in range(max(0, idx[0] - 4), min(im.shape[0], idx[0] + 5)):
+                #for j in range(max(0, idx[1] - 4), min(im.shape[1], idx[1] + 5)):
+                    #temp[i, j] /= tot
                     
-            nim += temp
+            #nim += temp
             
        
         #print(im[0].shape)

@@ -9,7 +9,7 @@ print("Loading libraries")
 import matplotlib
 #matplotlib.use("Agg")
 
-ROUNDS = 10000 // 16
+ROUNDS = 1
 
 import numpy as np
 import os
@@ -110,6 +110,7 @@ while True:
 
         plt.figure(figsize=(10, 10))
         plt.axis('off')
+        print(image[:, :].shape)
         plt.imshow(image[0,:, :], cmap='gray', interpolation='nearest')
         plt.savefig(os.path.join(vis_dir, "grp{}_image{}.png".format(grp, i+1)), bbox_inches='tight', pad_inches=0)
         plt.close()

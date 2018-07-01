@@ -34,6 +34,7 @@ class InputImageTuple(caffe.Layer):
         self._key_index = 0
         self._data_keys = np.genfromtxt(self._keys_file, "U")
         self._data_labels = np.genfromtxt(self._label_file, 'i')
+        print(self._data_keys, self._data_labels)
         assert ((len(top) - 1) % len(self._base_dir)) == 0
         self._num_images = (len(top) - 1) / len(self._base_dir)
         assert len(self._data_keys) == len(self._data_labels)
@@ -144,12 +145,14 @@ class InputImageTuple(caffe.Layer):
             saliency = np.amax(delta,axis=0)      # Find max across RGB channels 
             
             plt.figure(figsize=(10, 10))
-            plt.subplot(1,2,1)
+            plt.subplot(1,1,1)
+            im = top[i].data[0][0,:,:]
+            #im *= saliency
             plt.imshow (top[i].data[0][0,:,:], cmap='gray')
             plt.axis('off')
 
-            plt.subplot(1,2,2)
-            plt.imshow (saliency, cmap='gray')
+            #plt.subplot(1,2,2)
+            plt.imshow (saliency, cmap='Reds', alpha = 0.5)
             plt.axis('off')
 
             plt.tight_layout()
