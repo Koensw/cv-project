@@ -33,18 +33,18 @@ grayscale                                                               & OPN3  
 color                                                                   & OPN3                    & 84.25 \%                   \\ \hline
 unprocessed lidar depth                                                 & OPN3                    & 75.93 \%                   \\ \hline
 grayscale                                                               & OPN4                    & 38.63 \%                   \\ \hline
-color                                                                   & OPN4                    & 44.56 \%                   \\ \hline
-unprocessed lidar depth                                                 & OPN4                    & 41.56 \%                   \\ \hline
-unprocessed lidar reflectances                                          & OPN4                    & 48.42 \%                   \\ \hline
-interpolated lidar depth                                                & OPN4                    & 44.47 \%                   \\ \hline
-lidar height                                                            & OPN4                    & 48.33 \%                   \\ \hline
+color                                                                   & OPN4                    & 48.49 \%                   \\ \hline
+unprocessed lidar depth                                                 & OPN4                    & 27.25 \%                   \\ \hline
+unprocessed lidar reflectances                                          & OPN4                    & 4.76 \%                   \\ \hline
+interpolated lidar depth                                                & OPN4                    & 59.28 \%                   \\ \hline
+lidar height                                                            & OPN4                    & 35.17 \%                   \\ \hline
 \end{tabular}
 \end{table}
 
 \section{Combining features}
 Besides viewing the features as single information source, it should be expected that the lidar provides additional information to enrich the representation learned from camera alone. To study this in more detail several networks have been implemented containing separate backbones for both the lidar and image data for the initial layers. These backbones combine at different depths of the network to a single backbone. This concatenation of neurons is always applied after the possible pooling, batch norm and ReLU steps at a particular depth, precisely before the next convolutional layer.
 
-Initial experiments where carried out on the OPN3 network with the unprocessed lidar and grayscale images to get an general understanding of merging on different depths - better combinations of features for acquiring maximum accuracy are investaged later on. It is clear from Table \ref{tab:merge_results} that merging after the first convolutional layer gives indeed an improvement, but the difference is relatively marginal with 0.4\% over using only grayscale. Merging further in the chain is more expensive as the number of parameters to learn increases significantly. It is found that the difficulty of the learning problem increases so substantially, that the accuracy with combined features does apparently not give any improved performance and it is found that merging after the fourth convolutional layer does not lead to convergence at all. 
+Initial experiments where carried out on the OPN3 network with the unprocessed lidar and grayscale images to get an general understanding of merging on different depths - better combinations of features for acquiring maximum accuracy are investigated later on. Table \ref{tab:merge_results} shows that merging after the first convolutional layer gives indeed an improvement, but the difference is very marginal with 0.4\% over using only grayscale, and could well fall within the limit of uncertainty of the training. Merging further in the chain is more expensive as the number of parameters to learn increases. It is established that the difficulty of the learning problem increases so substantially, that the accuracy with combined features does apparently not give any improved performance and it can even be seen that merging after the fourth convolutional layer does not lead to convergence at all. 
 
 Further investigations were performed on the OPN4 network to find the strength of different feature combinations. The combination of grayscale and lidar shows much stronger performance on the OPN4 network, with a difference of around 6\%, considerably higher than the improvement in the OPN3 network.
 
