@@ -34,7 +34,7 @@ Besides the unprocessed lidar depth from the direct projection, also other data 
 
 \begin{table}[]
 \centering
-\caption{Accuracy results for the sorting task on different individual features}
+\caption{Accuracy results for the sorting task on different individual features (italic indicates non-converging)}
 \label{tab:indiv_results}
 \begin{tabular}{|p{7.5cm}|p{2cm}|p{2cm}|}
 \hline
@@ -45,7 +45,7 @@ unprocessed lidar depth                                                 & OPN3  
 grayscale                                                               & OPN4                    & 51.16 \%                   \\ \hline
 color                                                                   & OPN4                    & 44.48 \%                   \\ \hline
 unprocessed lidar depth                                                 & OPN4                    & 27.25 \%                   \\ \hline
-unprocessed lidar reflectances                                          & OPN4                    & 4.76 \%                   \\ \hline
+unprocessed lidar reflectances                                          & OPN4                    & \textit{4.76} \%                   \\ \hline
 lidar height                                                            & OPN4                    & 35.17 \%                   \\ \hline
 interpolated lidar depth                                                & OPN4                    & 59.28 \%                   \\ \hline
 \end{tabular}
@@ -64,18 +64,18 @@ Looking at the influence of the merging depth, it becomes clear that merging fur
 
 \begin{table}[]
 \centering
-\caption{Accuracy results on the trained networks}
+\caption{Accuracy results on the trained networks (italic indicates non-converging)}
 \label{tab:merge_results}
 \begin{tabular}{|p{7.5cm}|p{2cm}|p{2cm}|}
 \hline
 \textbf{Input}                                                          & \textbf{Output network} & \textit{\textbf{Accuracy}} \\ \hline
 grayscale and unprocessed lidar merged after first convolution          & OPN3                    & 82.84 \%                   \\ \hline
 grayscale and unprocessed lidar merged after third convolution          & OPN3                    & 79.48 \%                   \\ \hline
-grayscale and unprocessed lidar merged after fourth convolution         & OPN3                    & 49.60 \%          \\ \hline
-grayscale, interpolated lidar depth and lidar height merged after first convolution          & OPN4                    & 56.30 ? \%                   \\ \hline
+grayscale and unprocessed lidar merged after fourth convolution         & OPN3                    & \textit{49.60} \%          \\ \hline
+grayscale, interpolated lidar depth and lidar height merged after first convolution          & OPN4                    & 56.30 (?) \%                   \\ \hline
 grayscale, interpolated lidar depth and lidar height merged after second convolution         & OPN4                    & 59.18 \%                   \\ \hline
 grayscale, interpolated lidar depth and lidar height merged after third convolution          & OPN4                    & 52.70 \%                   \\ \hline
-grayscale, interpolated lidar depth and lidar height merged after fourth convolution         & OPN4                    & 4.29 \%                   \\ \hline
+grayscale, interpolated lidar depth and lidar height merged after fourth convolution         & OPN4                    & \textit{4.29} \%                   \\ \hline
 \end{tabular}
 \end{table}
 
