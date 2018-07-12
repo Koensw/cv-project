@@ -5,5 +5,11 @@
 % Extended 13/02/2009 by Jan Lesniak - jlesniak@vision.ee.ethz.ch
 %% ----------------------------------------------------------------------------
 
-\chapter{Conclusion}
-In this work we analyzed the learning of a self-supervised ordening task on camera and lidar data on the autonomous driving dataset Kitti.
+\chapter{Conclusions and Future Work}
+In this work the applicability of self-supervised learning using an ordening task on camera and lidar data was analyzed with the autonomous driving dataset Kitti\cite{geiger2012}. The primary goal was twofold: (1) investigating the performance of a self-supervised task on an autonomous driving dataset and (2) researching the strength of additional input features in the form of lidar data in various representations and examining if those could enhance performance when combined with camera data.
+
+It has been shown that the network are definitely capable of learning to order frames, the binary ordering task has even been shown to be on the easy side for a convolutional neural network to learn. Using the more difficult 24-order permutation task studied [??] top-1 accuracies were achieved, signalling strong and robust performance. The strong performance on the self-supervised task does unfortuantely however not appear to be directly scalable to different problems in its current state. It was found that the quality of the network filters remain on a relatively basic scale. Also more detailed investigations seem to indicate that the network does not learn details about particular objects and instead remain reliant on general correlation between images. To verify this behavior and to work on alternative approaches to make it harder to learn low-level features is an interesting direction for future work. Especially sampling different parts of the frame might be an worthwhile approach to investigate, although that would also imply getting rid of certain features in the field-of-view of the cameras making it impossible to use the frame consistency that is specifically apparent in driving datasets.  
+
+From the point of view of using lidar to enhance the learning, it is directly clear that it improves the learning. [...]
+
+The most important step for future work would be to test the investigated backbones on various alternative tasks like classification and object detection, to gain from the structure learnt by the self-supervised task, without direct supervision. Due to time constraints this step could unfortunately not yet been implemented as part of this thesis.

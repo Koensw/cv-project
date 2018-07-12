@@ -14,10 +14,31 @@ The main goal of this paper is to investigate the possiblities for self-supervis
 \item The output features of all images in the sequence of are subsequently used as input to an ordering network.
 \item The ordering network predicts either if the ordering is correct (easy)\cite{misra2016} or the actual permutation (harder)\cite{lee2017}.
 \end{enumerate}
-An example of such a task is in\needfig.
+A general implementation of this approach for the permutation order network has been provided in Figure \ref{fig:sorting_sequence}.
 
 \section{Generating train and test data}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{images/img_first.png}
+\includegraphics[width=\textwidth]{images/img_second.png}
+\includegraphics[width=\textwidth]{images/img_third.png}
+\caption{Example of a sequence with three frames from the Kitti dataset~\cite{geiger2012}}
+\label{fig:frames}
+\end{figure}
+
 As the task is unsupervised there is no need for labeled data, only a large number of video samples with precise lidar measurement. For this task one suitable choice is the Kitti\cite{geiger2012} visual odometry dataset, which is primarily used in all experiments. This dataset contains a total of 22 sequences covering a total length of 39.2 km of outdoor streets divided in over 41k frames sampled at 10 Hz. It contains high-quality images from two grayscale and two color PointGrey Flea2 video cameras with 1392×512 pixel resolutions and corresponding lidar range scans from a Velodyne HDL-64E 3D laser scanner.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.49\textwidth]{images/color.png}
+\includegraphics[width=0.49\textwidth]{images/gray.png}
+\includegraphics[width=0.49\textwidth]{images/lidar_depth.png}
+\includegraphics[width=0.49\textwidth]{images/lidar_depth_int.png}
+\includegraphics[width=0.49\textwidth]{images/lidar_height.png}
+\includegraphics[width=0.49\textwidth]{images/lidar_refl.png}
+\caption{Different representations of available data for the second frame displayed in Figure \ref{fig:frames} downscaled to the 227x227 version fed to the network before jittering is applied, with from top-left to bottom-right: color, grayscale, lidar depth, interpolated lidar depth, lidar height and lidar reflectance}
+\label{fig:features}
+\end{figure}
 
 The dataset was split into 15 sequences for generating the training data and 7 independent sequences for testing. For generating the image data the RGB camera 02 was selected, the data from the other camera's was not used. Because the input images are of large dimensions for common backbone networks the images were first downscaled with anti-aliasing to a size of 227x227 as used in Caffenet~\cite{jia2014}. This resizing does not preserve scaling, but this is not a primary issue as all images are downsized in the same way and the structure of the objects remain clear in those smaller images. Finally for all experiments with single channel images channel splitting is employed, by randomly selecting one of the three RGB channels, it has been shown that this makes the data more rigid against learning low-level features then direct conversion to grayscale~\cite{lee2017}. The final images are saved as grayscale images and therefore these channel split images are simply referred grayscale images afterwards. In other experiments the data is used in full color.
 
@@ -38,4 +59,4 @@ A customized input layer was implemented in Caffe, capable of loading a sequence
 
 To further investigate the contents of the network, a variety of other visualization techniques have been implemented. A basic visualization layer was implemented to show the sequences with their output including probability, which was mostly used for debugging purposes. Furthermore, a simple visualizer of the weights of the various convolutional layers has been realized. Because a convolutional filter reacts strong on a shape which is similar to its own, it is to be expected that the first layer should contain a variety of edge and corner detectors. The later layers in a network are harder to interpret and visualize, but noisy patterns can be an indication for networks which have not been trained long enough or significant overfitting due to a low regularization strength\needref. Another interesting approach is visualizing the strength of the activations, which are more difficult to interpret but should generally lead to sparser and more local maps in later layers. Finally a procedure by Girshick et al.~\cite{girshick2014} was followed for visualizing the regions in the image that show maximal activation in different layers, which is primarily interesting to find the important part of the images in the deeper convolutional layers.
 
-All the code built for this thesis can be found online on \needref. Note that the research work is only sparsely documented and small changes are required to allow running the software stack, however everything to reproduce the results in this work is present.
+All the code built for this thesis can be found online on \needref.  More details about the implementation will be presented in Appendix \ref{app:implementation_details}
