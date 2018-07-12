@@ -2,6 +2,7 @@ from __future__ import print_function, absolute_import
 import matplotlib.pyplot as plt
 import numpy as np
 import os, sys
+import scipy
 #if len(sys.argv) != 2:
     #print('ERROR: pass base location as argument')
     #sys.exit(1)
@@ -11,15 +12,15 @@ def addPath(path):
     if path not in sys.path:
         sys.path.insert(0, path)
 
-addPath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../utils'))
+addPath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../utils'))
 
 from blob_fetcher import BlobFetcher
 import glob
 import re
 
 base_dir = "/srv/glusterfs/patilv/Datasets/kitti/visual_odometry/dataset/sequences"
-local_file_dir = "velodyne_proj_reflectance_2/"
-store_dir = "/home/kwolters/sp/data/vis_lid_refl/"
+local_file_dir = "velodyne_proj_height_2/"
+store_dir = "/home/kwolters/sp/data/vis_lid_height_int/"
 
 dirs = sorted(glob.glob(os.path.join(base_dir, "*")))
 dir_size = []
@@ -70,6 +71,17 @@ for i, ds in enumerate(dir_size):
         im = np.transpose(im, axes = (1, 2, 0))
         if im.shape[2] == 1:
             im = im[:, :, 0]
+            
+        print(np.max(im), np.min(im))
+        print(im)
+        im[im < 1e-3] = 0
+        nz = np.nonzero(im)
+        
+        grid = np.mgrid[0:im.shape[0],0:im.shape[1]]
+        
+        print(nz[0].shape, im.shape[0]*im.shape[1])
+        print(nz, grid)
+        nim = scipy.interpolate.griddata(nz, im[nz], tuple(grid), method = 'linear')
        
         #nim = np.zeros(im.shape)
         #temp = np.zeros(im.shape)
@@ -93,15 +105,19 @@ for i, ds in enumerate(dir_size):
             
        
         #print(im[0].shape)
-        #plt.imshow(nim[:, :], cmap="gray")
-        #plt.show()
+        plt.figure()
+        plt.imshow(im, cmap="gray")
+        plt.figure()
+        plt.imshow(nim, cmap="gray")
+        plt.show()
+        sys.exit(0)
         
         #print(nim, im)
         
         
         im_path = os.path.join(store_dir, loc)
         #print(im_path, im.shape)
-        plt.imsave(im_path, im, cmap = 'gray')
+        plt.imsave(im_path, nim, cmap = 'gray')
         #sys.exit(0)
         #plt.imshow(im[:, :, 1], cmap="gray")
         #plt.show()

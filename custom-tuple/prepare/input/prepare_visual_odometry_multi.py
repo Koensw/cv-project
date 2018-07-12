@@ -8,11 +8,11 @@ import re
 import sys
 import matplotlib.pyplot as plt
 
-ROUNDS = 20000
-DIFF = 5
-DIFF_RANGE = 1
+ROUNDS = 10000
+DIFF = 7
+DIFF_RANGE = 3
 
-MOV_TRESHOLD = 65
+MOV_TRESHOLD = 30 # 65
 
 MODE = 'all'
 
@@ -34,8 +34,8 @@ keys_file = open("odo_image_keys.txt", 'w')
 #base_name = "/srv/glusterfs/patilv/Datasets/kitti/raw/extracted"
 ##local_file_dir = "2011_09_26_drive_0005_sync/image_02/data/"
 #local_file_dir = "image_02/data/"
-base_name = "/srv/glusterfs/patilv/Datasets/kitti/visual_odometry/dataset/sequences"
-local_file_dir = "image_0/"
+base_name = "/home/kwolters/sp/data/vis_od_color/"
+local_file_dir = ""
 
 dirs = glob.glob(os.path.join(base_name, "*"))
 dir_size = []

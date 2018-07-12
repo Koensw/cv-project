@@ -1,0 +1,30 @@
+---
+name: 'opn4_caffe_gray_lid_depth_height_conv1'
+
+data_dir: ['/home/kwolters/sp/data/vis_od', '/home/kwolters/sp/data/vis_lid_depth', '/home/kwolters/sp/data/vis_lid_height']
+output_dir: '/home/kwolters/sp/project/custom-tuple/snapshots/'
+batch_size: 16
+
+num_inputs: 12
+num_outputs: 24
+groups: [4, 4, 4]
+max_pre_backbone: 1
+
+train_keys: '/home/kwolters/sp/input/opn/train/odo_image_keys.txt'
+train_labels: '/home/kwolters/sp/input/opn/train/odo_image_labels.txt'
+test_keys: '/home/kwolters/sp/input/opn/test/odo_image_keys.txt'
+test_labels: '/home/kwolters/sp/input/opn/test/odo_image_labels.txt'
+
+backbone: '/home/kwolters/sp/project/custom-tuple/generate/networks/caffenet_opn.prototxt'
+network: '/home/kwolters/sp/project/custom-tuple/generate/networks/opn.prototxt'
+
+color: false
+channel_split: false
+
+visualize: True
+vis_iter: 4096
+
+base_lr: 0.01
+weight_decay: 0.001
+step_value: [2000, 5000, 8000]
+iter_size: 8

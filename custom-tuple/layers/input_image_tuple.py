@@ -34,7 +34,7 @@ class InputImageTuple(caffe.Layer):
         self._key_index = 0
         self._data_keys = np.genfromtxt(self._keys_file, "U")
         self._data_labels = np.genfromtxt(self._label_file, 'i')
-        print(self._data_keys, self._data_labels)
+        #print(self._data_keys, self._data_labels)
         assert ((len(top) - 1) % len(self._base_dir)) == 0
         self._num_images = (len(top) - 1) / len(self._base_dir)
         assert len(self._data_keys) == len(self._data_labels)
