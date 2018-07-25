@@ -7,12 +7,12 @@
 \chapter{Implementation details}
 \label{app:implementation_details}
 
-The software produced for this thesis can be found at \needref. To use the software the following steps should be followed:
+The software produced for this thesis can be found at [??]. To use the software the following steps should be executed:
 \begin{enumerate}
-\item The input data should be preprocessed to the correct format, to prevent expensive preprocessing while the network is learning. For this the scripts in the \textit{prepare/data} directory are useful. They read in the images from a central location and scale them down to 227x227 size, including possible conversion to grayscale before storing them on the disk.
-\item Then the required training and test set can be generated. Herefore scripts are provided in the the \textit{prepare/input} directory for different varieties of the experiments.
-\item In the next step the actual different type of experiments can be generated, for this purpose an \textit{generate/gen\_experiment.py} script is provided that initializes a directory with a solver.txt and net.txt protobuf files necessary for running Caffe. All the experiments are found in the \textit{experiments} folder, where relevant paths should be updated to reflect the local file system.
+\item The input data should be preprocessed to the correct format, to prevent expensive transformations while the network is learning. For this the scripts in the \textit{prepare/data} directory are useful. They read the images from a central location and scale them down to 227x227 size, including possible conversion to grayscale before storing them on disk.
+\item Then the required training and test set can be generated. Scripts are provided in the \textit{prepare/input} directory for different variations of the experiments.
+\item In this step the actual different types of experiments are generated, for this purpose an \textit{generate/gen\_experiment.py} script is provided that initializes a directory with a solver.txt and net.txt protobuf files necessary for running Caffe. All the experiments are found in the \textit{experiments} folder, where relevant paths should be updated to reflect the local file system.
 \item Eventually the training can be run by invoking \textit{train.py} with the first argument to the solver.txt of the generated experiment. 
-\item Finally when training is finished, accuracy can be calculated and some of the visualizations can be produced by running \textit{test.py} with the first argument pointing to the net.prototxt and the second argument a .caffemodel file produced during training that contain the state of the network.
+\item Finally when training is finished, accuracy can be calculated and some of the visualizations can be produced by running \textit{test.py} with the first argument pointing to the net.prototxt and the second argument to a .caffemodel file produced during training that contain the state of the network.
 \end{enumerate}
 All the software is made available under the MIT license. Note that the software is considered research in progress and has limited documentation. Small changes might be required to run the software stack on your own computer, however everything to reproduce the results in this work should be present.
