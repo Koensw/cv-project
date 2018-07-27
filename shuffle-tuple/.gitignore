@@ -1,9 +1,0 @@
-*.caffemodel
-*.solverstate
-*.pyc
-*.mex
-*.so
-*.a
-*.o
-*.h5
-*.pkl
