@@ -6,10 +6,24 @@ if len(sys.argv) != 3:
 
 print("Loading libraries")
 
-import matplotlib
+import matplotlib as mpl
+params = {
+   'axes.labelsize': 12,
+#   'text.fontsize': 8,
+   'legend.fontsize': 10,
+   'xtick.labelsize': 10,
+   'ytick.labelsize': 10,
+   'text.usetex': False,
+   'figure.figsize': [4.5, 4.5]
+   }
+mpl.rcParams.update(params)
 #matplotlib.use("Agg")
 
-ROUNDS = 20000//16 # 20000 // 16 #1
+ROUNDS = 1 #320//16 #//16 #5000//16 # 20000//16 # 20000 // 16 #1
+SAVE_PLOTS = True
+SAVE_PERCENTAGES = False
+PLOT_FIRST_IMAGE = False
+DIFF = 1
 
 import numpy as np
 import os
@@ -50,30 +64,27 @@ np.set_printoptions(precision=2)
 total = 0
 cnt = 0
 first_image = None
+
+batch_len = len(net.blobs['label'].data)
+labels = np.arange(ROUNDS * batch_len) * DIFF
+percentages = np.zeros(ROUNDS * batch_len)
 for i in range(ROUNDS):
     if (cnt % 50) == 0: print(cnt)
     forward_data = net.forward()
-    #if first_image is None: first_image = np.copy(net.blobs['im1'].data[0])
-    #else:
-        #stop = False
-        #for img in net.blobs['im1'].data:
-            #if np.all(img == first_image): 
-                #stop = True
-                #break
-        
-        #if stop:
-            #print('STOP:', cnt)
-            #break
-            
-        #print(first_image == net.blobs['im1'].data[:])
     
-    #print(net.blobs['label'].data, np.argmax(net.blobs['prob'].data[:,:], axis = 1))
+    if first_image is None: 
+        first_image = np.copy(net.blobs['im1'].data[0])
+        if PLOT_FIRST_IMAGE:
+            plt.figure()
+            plt.imshow(first_image[0])
+    
+    percentages[i*batch_len:(i+1)*batch_len] = net.blobs['prob'].data[np.arange(batch_len), net.blobs['label'].data.astype(np.int32)]
     expout = np.vstack((net.blobs['label'].data, np.argmax(net.blobs['prob'].data[:,:], axis = 1), np.max(net.blobs['prob'].data[:,:], axis = 1))).transpose()
     #print(expout)
     #maxeo = (expout > 0.5)
     total += np.sum(expout[:,0] == expout[:,1]) / len(expout)
     cnt = cnt + 1
-
+    
 print('Loss:', net.blobs['loss'].data)
 expout[expout < 0.01] = 0
 print('Exp / Out:\n', expout)
@@ -84,6 +95,23 @@ print('Accuracy', total / cnt)
 print("Visualizing...")
 net.force_backward = True
 net.backward() # saliency maps
+
+if SAVE_PERCENTAGES:
+    plt.figure(figsize=(10, 10))
+    plt.plot(labels, percentages)
+    plt.axvline(x=37, color='r', linestyle='-')
+    plt.axvline(x=250, color='g', linestyle='-')
+    plt.axvline(x=275, color='y', linestyle='-')
+    plt.ylim([0, 1])
+    plt.xlim([0, ROUNDS*batch_len*DIFF])
+    plt.ylabel("estimated probability of correct permutation")
+    plt.xlabel("frame index")
+    #plt.gca().axes.get_xaxis().set_ticks([])
+    plt.savefig("percentages.png")
+    plt.show()
+    
+if not SAVE_PLOTS:
+    sys.exit(0)
 
 vis_dir = os.path.join(os.path.dirname(sys.argv[1]), '../vis')
 grp = 0

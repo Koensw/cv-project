@@ -9,14 +9,13 @@ num_inputs: 4
 num_outputs: 24
 groups: [4]
 
-# NOTE TEST ON STANDARD
 train_keys: '/home/kwolters/sp/input/time_diff/train_opn4/odo_image_keys.txt'
 train_labels: '/home/kwolters/sp/input/time_diff/train_opn4/odo_image_labels.txt'
-test_keys: '/home/kwolters/sp/input/standard/test/odo_image_keys.txt'
-test_labels: '/home/kwolters/sp/input/standard/test/odo_image_labels.txt'
+test_keys: '/home/kwolters/sp/input/opn/test/odo_image_keys.txt'
+test_labels: '/home/kwolters/sp/input/opn/test/odo_image_labels.txt'
 
 backbone: '/home/kwolters/sp/project/custom-tuple/generate/networks/caffenet_opn.prototxt'
-network: '/home/kwolters/sp/project/custom-tuple/generate/networks/opn3.prototxt'
+network: '/home/kwolters/sp/project/custom-tuple/generate/networks/opn.prototxt'
 
 color: false
 channel_split: false
