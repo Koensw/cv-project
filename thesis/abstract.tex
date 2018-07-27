@@ -9,7 +9,19 @@
 \vspace{3cm}
 
 \chapter*{Abstract}
-In this work we study the application of recent self-supervised learning techniques on datasets for autonomous driving. The focus of this work is the usage of temporal coherence to learn to predict order and coherence between lidar and camera images.
+Convolutional neural networks have achieved strong results in recent years. However with networks typically having millions of parameters, large labeled datasets are needed to learn powerful generalizable models and constructing those supervision signals is hampered by the expense of human annotation required. Self-supervised learning is a novel paradigm exploiting the intrinsic structure of data to create labels automatically, aiming to learn generic features. Videos from datasets for autonomous driving contain much intrinsic data from camera and lidar sensors and pose an interesting possibility for a self-supervised ordering task. 
+
+This work aims to do an initial study of the learning performance of this ordering task on the KITTI dataset, without using its annotation. Frames are shuffled and both an easier task, where the network has to estimate if the data is sorted or not, as well as a harder task to estimate one of the 24 possible permutations, are explored. As input features images in color and grayscale are used together with 2D projected lidar depth, height and reflectance maps.
+
+Neural networks are found to be well capable of sorting video frames. Top-1 accuracies close to 60\% are achieved on the harder permutation estimation task using interpolated lidar depth. Remarkably, combining lidar and camera data does not directly lead to an improvement in accuracy on the datasets generated for this task. 
+
+While the trained network appears to learn basic generic filters, no focus on a particular high-level feature in the environment has been recorded in the current state. Self-supervised learning remains therefore a promising technique to enhance models for autonomous driving, but more research will be needed to improve the generalizability of the network.
+
+%The quality of the learned features should be improved to achieve better results, but self-supervision has been shown to be a promising direction of future research to enhance models for self-driving cars.
+
+%In this work we study the application of recent self-supervised learning techniques on datasets for autonomous driving. The focus of this work is the usage of temporal coherence to learn to predict order and coherence between lidar and camera images.
+
+%[...]
 % \noindent The abstract gives a concise overview of the work you have done. The reader shall be able to decide whether the work which has been done is interesting for him by reading the abstract. Provide a brief account on the following questions:
 % 
 % \begin{itemize}

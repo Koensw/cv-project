@@ -16,3 +16,4 @@ models
 snapshots
 logs
 *swp
+*.bak

@@ -44,8 +44,11 @@
 % \usepackage{algorithm}
 
 % TODO
-\newcommand{\needref}{~[REF?]}
-\newcommand{\needfig}{~[FIG?]}
+%\newcommand{\needref}{~[REF?]}
+%\newcommand{\needfig}{~[FIG?]}
+%\newcommand{\needref}{}
+%\newcommand{\needfig}{}
+
 
 % Change the appearance of the header. Here \MakeUppercase is hard-coded, so renewing this command allows to elegantly change the header appearance.
 \renewcommand{\MakeUppercase}{\scshape}
@@ -63,6 +66,7 @@
 
 \pagestyle{fancy}
 
+\setlength{\fboxsep}{0pt}%
 %\setlength{\headheight}{55pt}
 %\addtolength\topmargin{-10pt}
 %\addtolength\footskip{20pt}
@@ -79,9 +83,9 @@
 \input{abstract.tex}
 
 % Input here any acknowledgements
-%\input{ack.tex}
-%\clearpage
-%\newpage
+\input{ack.tex}
+\clearpage
+\newpage
 
 % % Chapter-pages etc. use the ``plain'' pagestyle - since we don't want to have a heading at all at chapter-pages, redefine plain accordingly. Don't forget the page number. 
 % \fancypagestyle{plain}{
@@ -119,13 +123,6 @@
 \input{discussion.tex}
 \input{conclusion.tex}
 
-
-%% ----------------------------------------------------------------------------
-% If Appendix is needed
-%% ----------------------------------------------------------------------------
-\appendix
-\input{appendix.tex}
-
 %% ----------------------------------------------------------------------------
 % Bibliography is stored in references.bib file, and can often be found
 % online on webpages like dblp.uni-trier.de
@@ -144,6 +141,12 @@
 \addcontentsline{toc}{chapter}{\numberline{}{\noexpand Bibliography}}%}
 \printbibliography
 
+
+%% ----------------------------------------------------------------------------
+% If Appendix is needed
+%% ----------------------------------------------------------------------------
+\appendix
+\input{appendix.tex}
 
 \end{document}
 
